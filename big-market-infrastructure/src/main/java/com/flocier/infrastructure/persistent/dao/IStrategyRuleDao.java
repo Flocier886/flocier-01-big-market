@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface IStrategyRuleDao {
     StrategyRule queryStrategyRuleByStrategyIdWithRuleModel(Long strategyId, String ruleModel);
+
+    String queryStrategyRuleValue(StrategyRule strategyRule);
 }
