@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.entity.StrategyRuleEntity;
+import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.infrastructure.persistent.dao.IStrategyAwardDao;
 import com.flocier.infrastructure.persistent.dao.IStrategyDao;
@@ -97,5 +98,14 @@ public class StrategyRepository implements IStrategyRepository {
         strategyRule.setRuleModel(ruleModel);
         return strategyRuleDao.queryStrategyRuleValue(strategyRule);
 
+    }
+
+    @Override
+    public StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId) {
+        StrategyAward strategyAward = new StrategyAward();
+        strategyAward.setStrategyId(strategyId);
+        strategyAward.setAwardId(awardId);
+        String ruleModels = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
+        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
     }
 }

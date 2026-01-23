@@ -5,6 +5,7 @@ import com.flocier.domain.strategy.model.entity.RaffleAwardEntity;
 import com.flocier.domain.strategy.model.entity.RaffleFactorEntity;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.vo.RuleLogicCheckTypeVO;
+import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.IRaffleStrategy;
 import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;
@@ -33,9 +34,9 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         if(strategyId==null || StringUtils.isBlank(userId)){
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(),ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+        //抽奖前的规则过滤
         //查询策略
         StrategyEntity strategy = repository.queryStrategyEntityByStrategyId(strategyId);
-        //抽奖前的规则过滤
         RaffleActionEntity<RaffleActionEntity.BeforeRaffleEntity>actionEntity=doCheckRaffleBeforeLogic(raffleFactorEntity,strategy.ruleModels());
         //看actionEntity中的code是否为TAKE_OVER的code，表明它被过滤过了
         if(actionEntity.getCode().equals(RuleLogicCheckTypeVO.TAKE_OVER.getCode())){
@@ -54,11 +55,27 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
                         .build();
             }
         }
+
         //默认抽奖逻辑
         Integer awardId=strategyDispatch.getRandomAwardId(strategyId);
+        //抽奖中的规则过滤
+        StrategyAwardRuleModelVO strategyAwardRuleModelVO=repository.queryStrategyAwardRuleModelVO(strategyId,awardId);
+        RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity> centerActionEntity=this.doCheckRaffleCenterLogic(RaffleFactorEntity.builder()
+                .strategyId(strategyId)
+                .userId(userId)
+                .awardId(awardId)
+                .build(),strategyAwardRuleModelVO.raffleCenterRuleModelList());
+        if(centerActionEntity.getCode().equals(RuleLogicCheckTypeVO.TAKE_OVER.getCode())){
+            log.info("【临时日志】中奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励。");
+            return RaffleAwardEntity.builder()
+                    .awardDesc("中奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励。")
+                    .build();
+        }
         return RaffleAwardEntity.builder()
                 .awardId(awardId)
                 .build();
     }
     protected abstract RaffleActionEntity<RaffleActionEntity.BeforeRaffleEntity>doCheckRaffleBeforeLogic(RaffleFactorEntity raffleFactorEntity,String... logics);
+
+    protected abstract RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity>doCheckRaffleCenterLogic(RaffleFactorEntity raffleFactorEntity,String... logics);
 }

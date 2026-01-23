@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.flocier.domain.strategy.model.entity.RaffleAwardEntity;
 import com.flocier.domain.strategy.model.entity.RaffleFactorEntity;
 import com.flocier.domain.strategy.service.IRaffleStrategy;
+import com.flocier.domain.strategy.service.armory.IStrategyArmory;
+import com.flocier.domain.strategy.service.rule.impl.RuleLockLogicFilter;
 import com.flocier.domain.strategy.service.rule.impl.RuleWeightLogicFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -22,10 +24,17 @@ public class RaffleStrategyTest {
     @Resource
     private RuleWeightLogicFilter ruleWeightLogicFilter;
     @Resource
+    private RuleLockLogicFilter ruleLockLogicFilter;
+    @Resource
     private IRaffleStrategy raffleStrategy;
+    @Resource
+    private IStrategyArmory strategyArmory;
     @Before
     public void setUp() {
+        log.info("3号抽奖初始化测试结果： {}",strategyArmory.assembleLotteryStrategy(100003L));
         ReflectionTestUtils.setField(ruleWeightLogicFilter, "userScore", 5500L);
+        ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 0L);
+
     }
 
     @Test
@@ -33,6 +42,16 @@ public class RaffleStrategyTest {
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
                 .userId("flocier")
                 .strategyId(100001L)
+                .build();
+        RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
+        log.info("请求参数：{}", JSON.toJSONString(raffleFactorEntity));
+        log.info("测试结果：{}", JSON.toJSONString(raffleAwardEntity));
+    }
+    @Test
+    public void test_rule_center_lock_rule() {
+        RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
+                .userId("flocier")
+                .strategyId(100003L)
                 .build();
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
         log.info("请求参数：{}", JSON.toJSONString(raffleFactorEntity));

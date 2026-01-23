@@ -29,6 +29,10 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy{
 
     @Override
     protected RaffleActionEntity<RaffleActionEntity.BeforeRaffleEntity> doCheckRaffleBeforeLogic(RaffleFactorEntity raffleFactorEntity, String... logics) {
+        if (logics == null || 0 == logics.length) return RaffleActionEntity.<RaffleActionEntity.BeforeRaffleEntity>builder()
+                .code(RuleLogicCheckTypeVO.ALLOW.getCode())
+                .info(RuleLogicCheckTypeVO.ALLOW.getInfo())
+                .build();
         //获取过滤器
         Map<String, ILogicFilter<RaffleActionEntity.BeforeRaffleEntity>>logicFilterMap=logicFactory.openLogicFilter();
 
@@ -64,6 +68,29 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy{
                     .build();
             actionEntity=logicFilter.filter(ruleMatterEntity);
             log.info("抽奖前规则过滤 userId: {} ruleModel: {} code: {} info: {}", raffleFactorEntity.getUserId(), ruleModel, actionEntity.getCode(),actionEntity.getInfo());
+            if(!actionEntity.getCode().equals(RuleLogicCheckTypeVO.ALLOW.getCode()))return actionEntity;
+        }
+        return actionEntity;
+    }
+
+    @Override
+    protected RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity> doCheckRaffleCenterLogic(RaffleFactorEntity raffleFactorEntity, String... logics) {
+        if (logics == null || 0 == logics.length) return RaffleActionEntity.<RaffleActionEntity.CenterRaffleEntity>builder()
+                .code(RuleLogicCheckTypeVO.ALLOW.getCode())
+                .info(RuleLogicCheckTypeVO.ALLOW.getInfo())
+                .build();
+        Map<String,ILogicFilter<RaffleActionEntity.CenterRaffleEntity>>logicFilterMap=logicFactory.openLogicFilter();
+        RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity>actionEntity=null;
+        for (String ruleModel:logics){
+            ILogicFilter<RaffleActionEntity.CenterRaffleEntity> logicFilter=logicFilterMap.get(ruleModel);
+            RuleMatterEntity ruleMatterEntity=RuleMatterEntity.builder()
+                    .ruleModel(ruleModel)
+                    .userId(raffleFactorEntity.getUserId())
+                    .strategyId(raffleFactorEntity.getStrategyId())
+                    .awardId(raffleFactorEntity.getAwardId())
+                    .build();
+            actionEntity=logicFilter.filter(ruleMatterEntity);
+            log.info("抽奖中规则过滤 userId: {} ruleModel: {} awardId: {} code: {} info: {}", raffleFactorEntity.getUserId(), ruleModel, raffleFactorEntity.getAwardId(),actionEntity.getCode(),actionEntity.getInfo());
             if(!actionEntity.getCode().equals(RuleLogicCheckTypeVO.ALLOW.getCode()))return actionEntity;
         }
         return actionEntity;
