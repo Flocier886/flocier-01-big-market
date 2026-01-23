@@ -1,13 +1,10 @@
 package com.flocier.domain.strategy.model.vo;
 
-import com.flocier.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import com.flocier.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import com.flocier.types.common.Constants;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
