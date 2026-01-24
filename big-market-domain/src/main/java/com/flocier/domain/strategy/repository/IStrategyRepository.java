@@ -5,6 +5,7 @@ import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.entity.StrategyRuleEntity;
 import com.flocier.domain.strategy.model.vo.RuleTreeVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
 import java.util.List;
 import java.util.Map;
@@ -31,4 +32,14 @@ public interface IStrategyRepository {
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
 
     RuleTreeVO queryRuleTreeVOByTreeId(String ruleModels);
+
+    Boolean subtractionAwardStock(String cacheKey);
+
+    void cacheStrategyAwardCount(String cacheKey, Integer awardCount);
+
+    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO build);
+
+    StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException;
+
+    void updateStrategyAwardStock(Long strategyId, Integer awardId);
 }

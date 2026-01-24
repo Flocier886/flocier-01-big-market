@@ -10,6 +10,9 @@ import com.flocier.infrastructure.persistent.dao.*;
 import com.flocier.infrastructure.persistent.po.*;
 import com.flocier.infrastructure.persistent.redis.IRedisService;
 import com.flocier.types.common.Constants;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBlockingQueue;
+import org.redisson.api.RDelayedQueue;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -17,8 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 public class StrategyRepository implements IStrategyRepository {
 
@@ -120,7 +125,7 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public RuleTreeVO queryRuleTreeVOByTreeId(String treeId) {
-        //优先从缓存中获取数据
+        //TODO优先从缓存中获取数据,数据库修改了必须要清除原缓存
         String cacheKey=Constants.RedisKey.RULE_TREE_VO_KEY+treeId;
         RuleTreeVO ruleTreeVOCache=redisService.getValue(cacheKey);
         if(ruleTreeVOCache!=null)return ruleTreeVOCache;
@@ -166,4 +171,69 @@ public class StrategyRepository implements IStrategyRepository {
         //包装并返回
         return ruleTreeVODB;
     }
+
+    /**
+     * 初始化抽奖池时先尝试进行库存缓存
+     * */
+    @Override
+    public void cacheStrategyAwardCount(String cacheKey, Integer awardCount) {
+        if(redisService.isExists(cacheKey))return;
+        redisService.setAtomicLong(cacheKey,awardCount);
+    }
+
+    /**
+     * 在缓存中扣减库存并上锁
+     * */
+    @Override
+    public Boolean subtractionAwardStock(String cacheKey) {
+        //原子性的操作缓存-1
+        long surplus=redisService.decr(cacheKey);
+        if(surplus<0){
+            //库存不足
+            redisService.setValue(cacheKey,0);
+            return false;
+        }
+        //TODO操作成功，上锁防止超卖(该上锁方法需要再次确认)
+        String lockKey=cacheKey+Constants.UNDERLINE+surplus;
+        Boolean lock=redisService.setNx(lockKey);
+        if(!lock){
+            log.info("策略奖品库存加锁失败 {}", lockKey);
+        }
+        return lock;
+    }
+
+    /**
+     * 获取延迟队列和阻塞队列，为延迟队列发送消息
+     * */
+    @Override
+    public void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO) {
+        String cacheKey=Constants.RedisKey.STRATEGY_AWARD_COUNT_QUEUE_KEY;
+        RBlockingQueue<StrategyAwardStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        RDelayedQueue<StrategyAwardStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        //发送给延迟队列消息,延迟3秒
+        delayedQueue.offer(strategyAwardStockKeyVO,3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 从阻塞队列中弹出信息
+     * */
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException{
+        String cacheKey=Constants.RedisKey.STRATEGY_AWARD_COUNT_QUEUE_KEY;
+        RBlockingQueue<StrategyAwardStockKeyVO>destinationQueue=redisService.getBlockingQueue(cacheKey);
+        return destinationQueue.poll();
+    }
+
+    /**
+     * 更新数据库库存信息
+     * */
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId){
+        StrategyAward strategyAward = new StrategyAward();
+        strategyAward.setStrategyId(strategyId);
+        strategyAward.setAwardId(awardId);
+        strategyAwardDao.updateStrategyAwardStock(strategyAward);
+
+    }
+
 }

@@ -34,7 +34,8 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         while(nextNode!=null){
             //获取决策节点
             ILogicTreeNode treeNode=logicTreeNodeMap.get(ruleTreeNode.getRuleKey());
-            DefaultTreeFactory.TreeActionEntity actionEntity=treeNode.logic(userId,strategyId,awardId);
+            String ruleValue=ruleTreeNode.getRuleValue();
+            DefaultTreeFactory.TreeActionEntity actionEntity=treeNode.logic(userId,strategyId,awardId,ruleValue);
             RuleLogicCheckTypeVO logicCheckTypeVO=actionEntity.getRuleLogicCheckType();
             strategyAwardData=actionEntity.getStrategyAwardVO();
             log.info("决策树引擎【{}】treeId:{} node:{} code:{}", ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNode, logicCheckTypeVO.getCode());

@@ -12,27 +12,27 @@ import javax.annotation.Resource;
 @Slf4j
 @Component("rule_lock")
 public class RuleLockLogicTreeNode implements ILogicTreeNode {
-    @Resource
-    private IStrategyRepository repository;
 
-    private Long userRaffleCount=0L;
+    private Long userRaffleCount=10L;
     @Override
-    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId) {
-        /**
-        //查询规则配置
-        String ruleValue=repository.queryStrategyRuleValue(strategyId,awardId,"rule_lock");
-        Long ruleRaffleCount=Long.parseLong(ruleValue);
+    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId,String ruleValue) {
+        long raffleCount=0L;
+        try {
+            raffleCount = Long.parseLong(ruleValue);
+        } catch (Exception e) {
+            throw new RuntimeException("规则过滤-次数锁异常 ruleValue: " + ruleValue + " 配置不正确");
+        }
         //判断是否需要拦截
-        if(userRaffleCount>=ruleRaffleCount){
-            DefaultTreeFactory.TreeActionEntity
+        if(userRaffleCount>=raffleCount){
+            return DefaultTreeFactory.TreeActionEntity
                     .builder()
                     .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
                     .build();
-        }**/
+        }
         //返回结果
         return DefaultTreeFactory.TreeActionEntity
                 .builder()
-                .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
+                .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
                 .build();
     }
 }

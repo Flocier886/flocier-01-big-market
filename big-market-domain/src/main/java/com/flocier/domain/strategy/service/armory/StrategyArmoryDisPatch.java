@@ -4,6 +4,7 @@ import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.entity.StrategyRuleEntity;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
+import com.flocier.types.common.Constants;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,12 @@ public class StrategyArmoryDisPatch implements IStrategyArmory, IStrategyDisPatc
     public boolean assembleLotteryStrategy(Long strategyId) {
         //1.获取策略配置
         List<StrategyAwardEntity> strategyAwardEntities=strategyRepository.queryStrategyAwardList(strategyId);
+        //缓存库存信息
+        for(StrategyAwardEntity awardEntity:strategyAwardEntities){
+            Integer awardId=awardEntity.getAwardId();
+            Integer awardCount=awardEntity.getAwardCount();
+            cacheStrategyAwardCount(strategyId,awardId,awardCount);
+        }
         assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
 
         //2.权重策略配置（在原本默认配置基础上再加上多的权重配置）
@@ -107,5 +114,17 @@ public class StrategyArmoryDisPatch implements IStrategyArmory, IStrategyDisPatc
         int rangeRate=strategyRepository.getRateRange(key);
         //通过范围值随机生成数字查找策略概率表
         return strategyRepository.getStrategyAwardAssemble(key,new SecureRandom().nextInt(rangeRate));
+    }
+
+    @Override
+    public void cacheStrategyAwardCount(Long strategyId,Integer awardId, Integer awardCount) {
+        String cacheKey= Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY+strategyId+Constants.UNDERLINE+awardId;
+        strategyRepository.cacheStrategyAwardCount(cacheKey,awardCount);
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+        String cacheKey=Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY+strategyId+Constants.UNDERLINE+awardId;
+        return strategyRepository.subtractionAwardStock(cacheKey);
     }
 }

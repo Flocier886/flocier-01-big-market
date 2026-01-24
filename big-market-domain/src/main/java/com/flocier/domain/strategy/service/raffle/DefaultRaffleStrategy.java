@@ -6,6 +6,7 @@ import com.flocier.domain.strategy.model.entity.RuleMatterEntity;
 import com.flocier.domain.strategy.model.vo.RuleLogicCheckTypeVO;
 import com.flocier.domain.strategy.model.vo.RuleTreeVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.AbstractRaffleStrategy;
 import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;
@@ -55,4 +56,13 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         return treeEngine.process(userId,strategyId,awardId);
     }
 
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return repository.takeQueueValue();
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        repository.updateStrategyAwardStock(strategyId,awardId);
+    }
 }
