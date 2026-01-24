@@ -1,7 +1,7 @@
 package com.flocier.domain.strategy.service.rule.tree.impl;
 
 import com.flocier.domain.strategy.model.vo.RuleLogicCheckTypeVO;
-import com.flocier.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
+
 import com.flocier.domain.strategy.service.rule.tree.ILogicTreeNode;
 import com.flocier.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import lombok.extern.slf4j.Slf4j;

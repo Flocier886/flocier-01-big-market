@@ -3,6 +3,7 @@ package com.flocier.domain.strategy.service.rule.chain.factory;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.rule.chain.ILogicChain;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -34,4 +35,28 @@ public class DefaultChainFactory {
         //返回过滤链的头部
         return logicChain;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StrategyAwardVO{
+        /** 抽奖奖品ID - 内部流转使用 */
+        private Integer awardId;
+        /**  */
+        private String logicModel;
+    }
+    @Getter
+    @AllArgsConstructor
+    public enum LogicModel{
+        //身份牌
+        RULE_DEFAULT("rule_default", "默认抽奖"),
+        RULE_BLACKLIST("rule_blacklist", "黑名单抽奖"),
+        RULE_WEIGHT("rule_weight", "权重规则"),
+        ;
+
+        private final String code;
+        private final String info;
+
+        }
 }

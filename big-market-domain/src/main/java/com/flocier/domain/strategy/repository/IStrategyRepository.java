@@ -3,6 +3,7 @@ package com.flocier.domain.strategy.repository;
 import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.entity.StrategyRuleEntity;
+import com.flocier.domain.strategy.model.vo.RuleTreeVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface IStrategyRepository {
     StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
 
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
+
+    RuleTreeVO queryRuleTreeVOByTreeId(String ruleModels);
 }

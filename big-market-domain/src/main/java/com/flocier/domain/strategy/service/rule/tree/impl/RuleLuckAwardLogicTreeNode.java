@@ -14,7 +14,7 @@ public class RuleLuckAwardLogicTreeNode implements ILogicTreeNode {
         //拦截并返回值
         return DefaultTreeFactory.TreeActionEntity.builder()
                 .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
-                .strategyAwardData(DefaultTreeFactory.StrategyAwardData.builder()
+                .strategyAwardVO(DefaultTreeFactory.StrategyAwardVO.builder()
                         .awardId(101)
                         .awardRuleValue("1,100")
                         .build())

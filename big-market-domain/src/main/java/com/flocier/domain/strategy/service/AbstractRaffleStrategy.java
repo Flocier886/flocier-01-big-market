@@ -10,7 +10,8 @@ import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;
 import com.flocier.domain.strategy.service.rule.chain.ILogicChain;
 import com.flocier.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
-import com.flocier.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
+import com.flocier.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
+import com.flocier.domain.strategy.service.rule.tree.factory.engine.impl.DecisionTreeEngine;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,14 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
     protected IStrategyRepository repository;
     protected IStrategyDisPatch strategyDispatch;
-    private final DefaultChainFactory defaultChainFactory;
-    public AbstractRaffleStrategy(IStrategyRepository repository, IStrategyDisPatch strategyDispatch, DefaultChainFactory defaultChainFactory) {
-        this.repository = repository;
-        this.strategyDispatch = strategyDispatch;
-        this.defaultChainFactory=defaultChainFactory;
+    protected final DefaultChainFactory defaultChainFactory;
+    protected final DefaultTreeFactory defaultTreeFactory;
+
+    protected AbstractRaffleStrategy(IStrategyRepository repository,IStrategyDisPatch strategyDispatch,DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
+        this.repository=repository;
+        this.strategyDispatch=strategyDispatch;
+        this.defaultChainFactory = defaultChainFactory;
+        this.defaultTreeFactory = defaultTreeFactory;
     }
 
 
@@ -36,26 +40,25 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         if(strategyId==null || StringUtils.isBlank(userId)){
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(),ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+
         //抽奖前的规则过滤
-        ILogicChain logicChain=defaultChainFactory.openLogicChain(strategyId);
-        Integer awardId=logicChain.logic(userId,strategyId);
-        //抽奖中的规则过滤
-        StrategyAwardRuleModelVO strategyAwardRuleModelVO=repository.queryStrategyAwardRuleModelVO(strategyId,awardId);
-        RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity> centerActionEntity=this.doCheckRaffleCenterLogic(RaffleFactorEntity.builder()
-                .strategyId(strategyId)
-                .userId(userId)
-                .awardId(awardId)
-                .build(),strategyAwardRuleModelVO.raffleCenterRuleModelList());
-        if(centerActionEntity.getCode().equals(RuleLogicCheckTypeVO.TAKE_OVER.getCode())){
-            log.info("【临时日志】中奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励。");
+        DefaultChainFactory.StrategyAwardVO chainStrategyAwardVO=raffleLogicChain(userId,strategyId);
+        log.info("抽奖策略计算-责任链 {} {} {} {}", userId, strategyId, chainStrategyAwardVO.getAwardId(), chainStrategyAwardVO.getLogicModel());
+        //黑名单直接跳过后面的过滤
+        if(chainStrategyAwardVO.getLogicModel().equals(DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode()))
             return RaffleAwardEntity.builder()
-                    .awardDesc("中奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励。")
-                    .build();
-        }
+                .awardId(chainStrategyAwardVO.getAwardId())
+                .build();
+
+        //抽奖中的规则过滤
+        DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO=raffleLogicTree(userId,strategyId,chainStrategyAwardVO.getAwardId());
+        log.info("抽奖策略计算-规则树 {} {} {} {}", userId, strategyId, treeStrategyAwardVO.getAwardId(), treeStrategyAwardVO.getAwardRuleValue());
         return RaffleAwardEntity.builder()
-                .awardId(awardId)
+                .awardId(treeStrategyAwardVO.getAwardId())
+                .awardConfig(treeStrategyAwardVO.getAwardRuleValue())
                 .build();
     }
 
-    protected abstract RaffleActionEntity<RaffleActionEntity.CenterRaffleEntity>doCheckRaffleCenterLogic(RaffleFactorEntity raffleFactorEntity,String... logics);
+    protected abstract DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId,Long strategyId);
+    protected abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId,Long strategyId,Integer awardId);
 }
