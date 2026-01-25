@@ -1,6 +1,15 @@
 server:
   port: 8091
 
+# 应用配置
+app:
+  config:
+    # 版本，方便通过接口版本升级
+    api-version: v1
+    # 跨域，开发阶段可以设置为 * 不限制
+    cross-origin: '*'
+
+
 # 线程池配置
 thread:
   pool:
