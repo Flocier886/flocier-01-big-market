@@ -1,19 +1,18 @@
-package com.flocier.infrastructure.persistent.po;
+package com.flocier.domain.activity.model.entity;
 
-
+import com.flocier.domain.activity.model.vo.OrderStateVO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-
 @Data
-public class RaffleActivityOrder {
-
-    /**
-     * 自增ID
-     */
-    private Long id;
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ActivityOrderEntity {
     /**
      * 用户ID
      */
@@ -45,34 +44,23 @@ public class RaffleActivityOrder {
     private Date orderTime;
 
     /**
-     * 活动总次数
+     * 总次数
      */
     private Integer totalCount;
 
     /**
-     * 日总次数
+     * 日次数
      */
     private Integer dayCount;
 
     /**
-     * 月总次数
+     * 月次数
      */
     private Integer monthCount;
 
     /**
      * 订单状态
      */
-    private String state;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+    private OrderStateVO state;
 
 }
-

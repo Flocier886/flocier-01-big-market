@@ -1,4 +1,4 @@
-package com.flocier.test.domain;
+package com.flocier.test.domain.strategy;
 
 import com.alibaba.fastjson.JSON;
 import com.flocier.domain.strategy.model.vo.*;

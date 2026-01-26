@@ -1,4 +1,4 @@
-package com.flocier.test.domain;
+package com.flocier.test.domain.strategy;
 
 import com.flocier.domain.strategy.service.armory.IStrategyArmory;
 import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;

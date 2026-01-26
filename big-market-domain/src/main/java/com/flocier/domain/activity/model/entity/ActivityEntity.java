@@ -1,17 +1,18 @@
-package com.flocier.infrastructure.persistent.po;
+package com.flocier.domain.activity.model.entity;
 
+import com.flocier.domain.activity.model.vo.ActivityStateVO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-public class RaffleActivity {
-
-    /**
-     * 自增ID
-     */
-    private Long id;
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ActivityEntity {
     /**
      * 活动ID
      */
@@ -37,6 +38,10 @@ public class RaffleActivity {
      */
     private Date endDateTime;
 
+    /**
+     * 活动参与次数配置
+     */
+    private Long activityCountId;
 
     /**
      * 抽奖策略ID
@@ -46,17 +51,5 @@ public class RaffleActivity {
     /**
      * 活动状态
      */
-    private String state;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
+    private ActivityStateVO state;
 }
-
