@@ -2,6 +2,8 @@ package com.flocier.infrastructure.persistent.redis;
 
 import org.redisson.api.*;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Redis 服务
  *
@@ -250,4 +252,6 @@ public interface IRedisService {
     void setAtomicLong(String key, Integer count);
 
     Boolean setNx(String key);
+
+    Boolean setNx(String key, long expireMillis, TimeUnit timeUnit);
 }

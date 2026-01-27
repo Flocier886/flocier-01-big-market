@@ -2,6 +2,7 @@ package com.flocier.domain.activity.service;
 
 import com.flocier.domain.activity.model.aggregrate.CreateOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
+import com.flocier.domain.activity.model.vo.ActivitySkuStockKeyVO;
 import com.flocier.domain.activity.model.vo.OrderStateVO;
 import com.flocier.domain.activity.repository.IActivityRepository;
 import com.flocier.domain.activity.service.rule.factory.DefaultActivityChainFactory;
@@ -12,7 +13,7 @@ import java.util.Date;
 
 
 @Service
-public class RaffleActivityService extends AbstractRaffleActivity{
+public class RaffleActivityService extends AbstractRaffleActivity implements ISkuStock{
 
     public RaffleActivityService(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         super(activityRepository, defaultActivityChainFactory);
@@ -50,5 +51,25 @@ public class RaffleActivityService extends AbstractRaffleActivity{
     @Override
     protected void doSaveOrder(CreateOrderAggregate createOrderAggregate) {
         repository.doSaveOrder(createOrderAggregate);
+    }
+
+    @Override
+    public ActivitySkuStockKeyVO takeQueueValue() throws InterruptedException {
+        return repository.takeQueueValue();
+    }
+
+    @Override
+    public void clearQueueValue() {
+        repository.clearQueueValue();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        repository.updateActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        repository.clearActivitySkuStock(sku);
     }
 }
