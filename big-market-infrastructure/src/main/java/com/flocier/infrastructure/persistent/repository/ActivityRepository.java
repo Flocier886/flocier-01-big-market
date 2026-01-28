@@ -2,8 +2,8 @@ package com.flocier.infrastructure.persistent.repository;
 
 import cn.bugstack.middleware.db.router.strategy.IDBRouterStrategy;
 import com.flocier.domain.activity.event.ActivitySkuStockZeroMessageEvent;
-import com.flocier.domain.activity.model.aggregrate.CreatePartakeOrderAggregate;
-import com.flocier.domain.activity.model.aggregrate.CreateQuotaOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreatePartakeOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.model.vo.ActivitySkuStockKeyVO;
 import com.flocier.domain.activity.model.vo.ActivityStateVO;

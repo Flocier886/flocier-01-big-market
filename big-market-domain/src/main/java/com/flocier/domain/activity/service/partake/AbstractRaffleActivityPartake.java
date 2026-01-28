@@ -1,7 +1,7 @@
 package com.flocier.domain.activity.service.partake;
 
 import com.alibaba.fastjson.JSON;
-import com.flocier.domain.activity.model.aggregrate.CreatePartakeOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreatePartakeOrderAggregate;
 import com.flocier.domain.activity.model.entity.ActivityEntity;
 import com.flocier.domain.activity.model.entity.PartakeRaffleActivityEntity;
 import com.flocier.domain.activity.model.entity.UserRaffleOrderEntity;

@@ -1,14 +1,12 @@
 package com.flocier.domain.activity.service.partake;
 
-import com.flocier.domain.activity.model.aggregrate.CreatePartakeOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreatePartakeOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.model.vo.UserRaffleOrderStateVO;
 import com.flocier.domain.activity.repository.IActivityRepository;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;

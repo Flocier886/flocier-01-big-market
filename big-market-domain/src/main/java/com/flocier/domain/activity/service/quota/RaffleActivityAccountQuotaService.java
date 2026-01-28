@@ -1,6 +1,6 @@
 package com.flocier.domain.activity.service.quota;
 
-import com.flocier.domain.activity.model.aggregrate.CreateQuotaOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.model.vo.ActivitySkuStockKeyVO;
 import com.flocier.domain.activity.model.vo.OrderStateVO;

@@ -1,4 +1,4 @@
-package com.flocier.domain.activity.model.aggregrate;
+package com.flocier.domain.activity.model.aggregate;
 
 
 import com.flocier.domain.activity.model.entity.ActivityOrderEntity;

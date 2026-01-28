@@ -1,7 +1,7 @@
 package com.flocier.domain.activity.service.quota;
 
 import com.alibaba.fastjson.JSON;
-import com.flocier.domain.activity.model.aggregrate.CreateQuotaOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.repository.IActivityRepository;
 import com.flocier.domain.activity.service.IRaffleActivityAccountQuotaService;

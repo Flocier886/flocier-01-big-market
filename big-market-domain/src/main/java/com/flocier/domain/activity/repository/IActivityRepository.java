@@ -1,7 +1,7 @@
 package com.flocier.domain.activity.repository;
 
-import com.flocier.domain.activity.model.aggregrate.CreatePartakeOrderAggregate;
-import com.flocier.domain.activity.model.aggregrate.CreateQuotaOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreatePartakeOrderAggregate;
+import com.flocier.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.model.vo.ActivitySkuStockKeyVO;
 
