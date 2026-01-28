@@ -1,16 +1,16 @@
-package com.flocier.domain.activity.service;
+package com.flocier.domain.activity.service.quota;
 
 import com.flocier.domain.activity.model.entity.ActivityCountEntity;
 import com.flocier.domain.activity.model.entity.ActivityEntity;
 import com.flocier.domain.activity.model.entity.ActivitySkuEntity;
 import com.flocier.domain.activity.repository.IActivityRepository;
-import com.flocier.domain.activity.service.rule.factory.DefaultActivityChainFactory;
+import com.flocier.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 
-public class RaffleActivitySupport {
+public class RaffleActivityAccountQuotaSupport {
     protected IActivityRepository repository;
     protected DefaultActivityChainFactory defaultActivityChainFactory;
 
-    public RaffleActivitySupport(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
+    public RaffleActivityAccountQuotaSupport(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         this.repository = activityRepository;
         this.defaultActivityChainFactory = defaultActivityChainFactory;
     }

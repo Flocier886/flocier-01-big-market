@@ -1,4 +1,4 @@
-package com.flocier.domain.activity.service.rule;
+package com.flocier.domain.activity.service.quota.rule;
 
 public interface IActionChainArmory {
     IActionChain next();

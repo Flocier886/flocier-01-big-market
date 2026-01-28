@@ -1,13 +1,10 @@
-package com.flocier.domain.activity.service.rule.factory;
+package com.flocier.domain.activity.service.quota.rule.factory;
 
-import com.flocier.domain.activity.service.rule.IActionChain;
+import com.flocier.domain.activity.service.quota.rule.IActionChain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 @Service

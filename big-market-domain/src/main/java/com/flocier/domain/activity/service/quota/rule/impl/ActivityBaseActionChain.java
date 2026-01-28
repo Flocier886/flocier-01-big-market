@@ -1,10 +1,10 @@
-package com.flocier.domain.activity.service.rule.impl;
+package com.flocier.domain.activity.service.quota.rule.impl;
 
 import com.flocier.domain.activity.model.entity.ActivityCountEntity;
 import com.flocier.domain.activity.model.entity.ActivityEntity;
 import com.flocier.domain.activity.model.entity.ActivitySkuEntity;
 import com.flocier.domain.activity.model.vo.ActivityStateVO;
-import com.flocier.domain.activity.service.rule.AbstractActionChain;
+import com.flocier.domain.activity.service.quota.rule.AbstractActionChain;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;

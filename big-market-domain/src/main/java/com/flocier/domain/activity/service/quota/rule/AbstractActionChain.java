@@ -1,4 +1,4 @@
-package com.flocier.domain.activity.service.rule;
+package com.flocier.domain.activity.service.quota.rule;
 
 public abstract class AbstractActionChain implements IActionChain{
     private IActionChain next;

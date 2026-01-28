@@ -1,4 +1,4 @@
-package com.flocier.domain.activity.service.rule;
+package com.flocier.domain.activity.service.quota.rule;
 
 import com.flocier.domain.activity.model.entity.ActivityCountEntity;
 import com.flocier.domain.activity.model.entity.ActivityEntity;

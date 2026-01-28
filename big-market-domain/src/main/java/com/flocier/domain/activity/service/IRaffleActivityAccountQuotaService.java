@@ -4,8 +4,8 @@ import com.flocier.domain.activity.model.entity.ActivityOrderEntity;
 import com.flocier.domain.activity.model.entity.ActivityShopCartEntity;
 import com.flocier.domain.activity.model.entity.SkuRechargeEntity;
 
-public interface IRaffleOrder {
+public interface IRaffleActivityAccountQuotaService {
     ActivityOrderEntity createRaffleActivityOrder(ActivityShopCartEntity activityShopCartEntity);
 
-    String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+    String createOrder(SkuRechargeEntity skuRechargeEntity);
 }
