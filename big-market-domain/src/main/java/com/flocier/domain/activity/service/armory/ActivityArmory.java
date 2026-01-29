@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,6 +28,20 @@ public class ActivityArmory implements IActivityArmory,IActivityDispatch{
         ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
         ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
         return true;
+    }
+
+    @Override
+    public void assembleActivitySkuByActivityId(Long activityId) {
+        //查询当前活动的所有sku
+        List<ActivitySkuEntity> activitySkuEntities=activityRepository.queryActivitySkuListByActivityId(activityId);
+        //缓存所有sku到redis
+        for (ActivitySkuEntity activitySkuEntity:activitySkuEntities){
+            cacheActivitySkuStockCount(activitySkuEntity.getSku(),activitySkuEntity.getStockCount());
+            //预热活动对应sku次数
+            activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
+        }
+        //预热活动
+        activityRepository.queryRaffleActivityByActivityId(activityId);
     }
 
     private void cacheActivitySkuStockCount(Long sku, Integer stockCount) {

@@ -44,6 +44,10 @@ public class StrategyRepository implements IStrategyRepository {
     private IRuleTreeNodeDao ruleTreeNodeDao;
     @Resource
     private IRuleTreeNodeLineDao ruleTreeNodeLineDao;
+    @Resource
+    private IRaffleActivityDao raffleActivityDao;
+    @Resource
+    private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
         //先从redis中查找获取
@@ -271,6 +275,27 @@ public class StrategyRepository implements IStrategyRepository {
         // 返回数据
         return strategyAwardEntity;
 
+    }
+
+    @Override
+    public Long queryStrategyIdByActivityId(Long activityId) {
+        return raffleActivityDao.queryStrategyIdByActivityId(activityId);
+    }
+
+    @Override
+    public Integer queryTodayUserRaffleCount(String userId, Long strategyId) {
+        //获取活动id
+        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+        //查询并返回
+        RaffleActivityAccountDay raffleActivityAccountDayReq=new RaffleActivityAccountDay();
+        raffleActivityAccountDayReq.setUserId(userId);
+        raffleActivityAccountDayReq.setActivityId(activityId);
+        raffleActivityAccountDayReq.setDay(raffleActivityAccountDayReq.currentDay());
+        RaffleActivityAccountDay raffleActivityAccountDay = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(raffleActivityAccountDayReq);
+        //如果为空，证明当天还没有过抽奖次数
+        if(raffleActivityAccountDay==null)return 0;
+        //当天抽奖次数等于总次数减去剩余次数
+        return raffleActivityAccountDay.getDayCount()-raffleActivityAccountDay.getDayCountSurplus();
     }
 
 }

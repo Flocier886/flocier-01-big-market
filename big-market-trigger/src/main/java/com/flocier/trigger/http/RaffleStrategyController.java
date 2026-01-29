@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.flocier.domain.strategy.model.entity.RaffleAwardEntity;
 import com.flocier.domain.strategy.model.entity.RaffleFactorEntity;
 import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
-import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.IRaffleAward;
 import com.flocier.domain.strategy.service.IRaffleStrategy;
 import com.flocier.domain.strategy.service.armory.IStrategyArmory;
-import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;
-import com.flocier.trigger.api.IRaffleService;
+import com.flocier.trigger.api.IRaffleStrategyService;
 import com.flocier.trigger.api.dto.RaffleAwardListRequestDTO;
 import com.flocier.trigger.api.dto.RaffleRequestDTO;
 import com.flocier.trigger.api.dto.RaffleResponseDTO;
@@ -28,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/${app.config.api-version}/raffle/")
 @CrossOrigin("${app.config.cross-origin}")
-public class RaffleController implements IRaffleService {
+public class RaffleStrategyController implements IRaffleStrategyService {
     @Resource
     private IStrategyArmory strategyArmory;
     @Resource

@@ -57,6 +57,12 @@ public class StrategyArmoryDisPatch implements IStrategyArmory, IStrategyDisPatc
         return true;
     }
 
+    @Override
+    public void assembleLotteryStrategyByActivityId(Long activityId) {
+        Long strategyId=strategyRepository.queryStrategyIdByActivityId(activityId);
+        assembleLotteryStrategy(strategyId);
+    }
+
     /**
      * 该方法用于创建指定的strategyAwardEntities的对应概率抽奖池
      * */
