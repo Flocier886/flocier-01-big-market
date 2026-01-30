@@ -12,6 +12,7 @@ import org.checkerframework.checker.index.qual.SameLen;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 @Slf4j
 @Component("rule_stock")
@@ -21,11 +22,12 @@ public class RuleStockLogicTreeNode implements ILogicTreeNode {
     @Resource
     private IStrategyRepository strategyRepository;
 
+
     @Override
-    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId,String ruleValue) {
+    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId, String ruleValue, Date endDateTime) {
         log.info("规则过滤-库存扣减 userId:{} strategyId:{} awardId:{}", userId, strategyId, awardId);
         //扣减库存操作
-        Boolean status=strategyDisPatch.subtractionAwardStock(strategyId, awardId);
+        Boolean status=strategyDisPatch.subtractionAwardStock(strategyId, awardId, endDateTime);
         if(status){
             log.info("规则过滤-库存扣减-成功 userId:{} strategyId:{} awardId:{}", userId, strategyId, awardId);
             //扣减成功，发送数据库扣减的延迟消息队列

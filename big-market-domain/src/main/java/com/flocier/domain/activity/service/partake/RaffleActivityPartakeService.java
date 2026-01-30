@@ -33,6 +33,7 @@ public class RaffleActivityPartakeService extends AbstractRaffleActivityPartake{
                 .strategyId(activityEntity.getStrategyId())
                 .orderId(RandomStringUtils.randomNumeric(12))
                 .orderState(UserRaffleOrderStateVO.create)
+                .endDateTime(activityEntity.getEndDateTime())
                 .orderTime(now)
                 .build();
     }

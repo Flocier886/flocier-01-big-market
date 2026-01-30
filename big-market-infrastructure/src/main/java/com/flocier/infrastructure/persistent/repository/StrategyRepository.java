@@ -17,10 +17,7 @@ import org.redisson.api.RDelayedQueue;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -198,20 +195,7 @@ public class StrategyRepository implements IStrategyRepository {
      * */
     @Override
     public Boolean subtractionAwardStock(String cacheKey) {
-        //原子性的操作缓存-1
-        long surplus=redisService.decr(cacheKey);
-        if(surplus<0){
-            //库存不足
-            redisService.setValue(cacheKey,0);
-            return false;
-        }
-        //TODO操作成功，上锁防止超卖(该上锁方法需要再次确认)
-        String lockKey=cacheKey+Constants.UNDERLINE+surplus;
-        Boolean lock=redisService.setNx(lockKey);
-        if(!lock){
-            log.info("策略奖品库存加锁失败 {}", lockKey);
-        }
-        return lock;
+        return subtractionAwardStock(cacheKey,null);
     }
 
     /**
@@ -296,6 +280,43 @@ public class StrategyRepository implements IStrategyRepository {
         if(raffleActivityAccountDay==null)return 0;
         //当天抽奖次数等于总次数减去剩余次数
         return raffleActivityAccountDay.getDayCount()-raffleActivityAccountDay.getDayCountSurplus();
+    }
+
+    @Override
+    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
+        if(treeIds==null && treeIds.length==0)return new HashMap<>();
+        List<RuleTreeNode> ruleTreeNodes=ruleTreeNodeDao.queryRuleLocks(treeIds);
+        Map<String,Integer>resultMap=new HashMap<>();
+        for(RuleTreeNode ruleTreeNode:ruleTreeNodes){
+            String treeId=ruleTreeNode.getTreeId();
+            Integer ruleValue=Integer.valueOf(ruleTreeNode.getRuleValue());
+            resultMap.put(treeId,ruleValue);
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(String cacheKey, Date endDateTime) {
+        //原子性的操作缓存-1
+        long surplus=redisService.decr(cacheKey);
+        if(surplus<0){
+            //库存不足
+            redisService.setValue(cacheKey,0);
+            return false;
+        }
+        //TODO操作成功，上锁防止超卖(该上锁方法需要再次确认)
+        String lockKey=cacheKey+Constants.UNDERLINE+surplus;
+        Boolean lock=false;
+        if(endDateTime==null){
+            lock=redisService.setNx(lockKey);
+        } else {
+            long expireMillis=endDateTime.getTime()-System.currentTimeMillis()+TimeUnit.DAYS.toMillis(1);
+            lock=redisService.setNx(lockKey,expireMillis,TimeUnit.MILLISECONDS);
+        }
+        if(!lock){
+            log.info("策略奖品库存加锁失败 {}", lockKey);
+        }
+        return lock;
     }
 
 }

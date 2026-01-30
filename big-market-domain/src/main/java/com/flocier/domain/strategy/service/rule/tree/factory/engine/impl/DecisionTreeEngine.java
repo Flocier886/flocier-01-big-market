@@ -9,6 +9,7 @@ import com.flocier.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import com.flocier.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +23,9 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         this.ruleTreeVO = ruleTreeVO;
     }
 
+
     @Override
-    public DefaultTreeFactory.StrategyAwardVO process(String userId, Long strategyId, Integer awardId) {
+    public DefaultTreeFactory.StrategyAwardVO process(String userId, Long strategyId, Integer awardId, Date endDateTime) {
         DefaultTreeFactory.StrategyAwardVO strategyAwardData=null;
         //获取决策树的头结点
         String nextNode=ruleTreeVO.getTreeRootRuleNode();
@@ -35,7 +37,7 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
             //获取决策节点
             ILogicTreeNode treeNode=logicTreeNodeMap.get(ruleTreeNode.getRuleKey());
             String ruleValue=ruleTreeNode.getRuleValue();
-            DefaultTreeFactory.TreeActionEntity actionEntity=treeNode.logic(userId,strategyId,awardId,ruleValue);
+            DefaultTreeFactory.TreeActionEntity actionEntity=treeNode.logic(userId,strategyId,awardId,ruleValue,endDateTime);
             RuleLogicCheckTypeVO logicCheckTypeVO=actionEntity.getRuleLogicCheckType();
             strategyAwardData=actionEntity.getStrategyAwardVO();
             log.info("决策树引擎【{}】treeId:{} node:{} code:{}", ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNode, logicCheckTypeVO.getCode());

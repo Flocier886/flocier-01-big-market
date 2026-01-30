@@ -7,6 +7,7 @@ import com.flocier.domain.strategy.model.vo.RuleTreeVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,6 @@ public interface IStrategyRepository {
 
     RuleTreeVO queryRuleTreeVOByTreeId(String ruleModels);
 
-    Boolean subtractionAwardStock(String cacheKey);
-
     void cacheStrategyAwardCount(String cacheKey, Integer awardCount);
 
     void awardStockConsumeSendQueue(StrategyAwardStockKeyVO build);
@@ -48,4 +47,10 @@ public interface IStrategyRepository {
     Long queryStrategyIdByActivityId(Long activityId);
 
     Integer queryTodayUserRaffleCount(String userId, Long strategyId);
+
+    Map<String, Integer> queryAwardRuleLockCount(String[] treeIds);
+
+    Boolean subtractionAwardStock(String cacheKey);
+
+    Boolean subtractionAwardStock(String cacheKey, Date endDateTime);
 }

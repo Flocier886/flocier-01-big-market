@@ -80,6 +80,7 @@ public class RaffleActivityController implements IRaffleActivityService {
             RaffleAwardEntity awardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder()
                     .strategyId(orderEntity.getStrategyId())
                     .userId(userId)
+                    .endDateTime(orderEntity.getEndDateTime())
                     .build());
             //存放结果(奖品发放由MQ实现)
             UserAwardRecordEntity userAwardRecordEntity = UserAwardRecordEntity.builder()

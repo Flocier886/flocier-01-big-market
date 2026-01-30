@@ -11,6 +11,7 @@ import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.AbstractRaffleStrategy;
 import com.flocier.domain.strategy.service.IRaffleAward;
+import com.flocier.domain.strategy.service.IRaffleRule;
 import com.flocier.domain.strategy.service.IRaffleStock;
 import com.flocier.domain.strategy.service.armory.IStrategyDisPatch;
 import com.flocier.domain.strategy.service.rule.chain.ILogicChain;
@@ -22,26 +23,20 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleStock, IRaffleAward {
+public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleStock, IRaffleAward, IRaffleRule {
     public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDisPatch strategyDispatch, DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
         super(repository, strategyDispatch,defaultChainFactory,defaultTreeFactory);
     }
 
     @Override
-    protected DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId) {
-        //先取出过滤链
-        ILogicChain logicChain= defaultChainFactory.openLogicChain(strategyId);
-        return logicChain.logic(userId,strategyId);
-    }
-
-    @Override
-    protected DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId) {
+    protected DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId, Date endDateTime) {
         //先查询规则信息
         StrategyAwardRuleModelVO strategyAwardRuleModelVO=repository.queryStrategyAwardRuleModelVO(strategyId,awardId);
         if (null == strategyAwardRuleModelVO) {
@@ -56,7 +51,19 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
         //再拿到决策引擎
         IDecisionTreeEngine treeEngine= defaultTreeFactory.openLogicTree(ruleTreeVO);
         //带入获取结果并返回
-        return treeEngine.process(userId,strategyId,awardId);
+        return treeEngine.process(userId,strategyId,awardId,endDateTime);
+    }
+
+    @Override
+    protected DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId) {
+        //先取出过滤链
+        ILogicChain logicChain= defaultChainFactory.openLogicChain(strategyId);
+        return logicChain.logic(userId,strategyId);
+    }
+
+    @Override
+    protected DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId) {
+        return raffleLogicTree(userId,strategyId,awardId,null);
     }
 
     @Override
@@ -72,5 +79,16 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
     @Override
     public List<StrategyAwardEntity> queryRaffleStrategyAwardList(Long strategyId) {
         return repository.queryStrategyAwardList(strategyId);
+    }
+
+    @Override
+    public List<StrategyAwardEntity> queryRaffleStrategyAwardListByActivityId(Long activityId) {
+        Long strategyId = repository.queryStrategyIdByActivityId(activityId);
+        return queryRaffleStrategyAwardList(strategyId);
+    }
+
+    @Override
+    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
+        return repository.queryAwardRuleLockCount(treeIds);
     }
 }

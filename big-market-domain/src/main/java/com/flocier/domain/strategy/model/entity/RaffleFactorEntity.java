@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 抽奖因子实体,用于让过滤器精准定位到是数据库中的哪个modelRule条件
@@ -20,6 +22,7 @@ public class RaffleFactorEntity {
     private String userId;
     /** 策略ID */
     private Long strategyId;
-    /** 奖品ID */
-    private Integer awardId;
+    /** 结束时间 */
+    private Date endDateTime;
+
 }
