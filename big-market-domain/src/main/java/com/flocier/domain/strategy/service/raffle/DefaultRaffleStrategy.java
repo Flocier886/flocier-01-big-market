@@ -4,10 +4,7 @@ import com.flocier.domain.strategy.model.entity.RaffleActionEntity;
 import com.flocier.domain.strategy.model.entity.RaffleFactorEntity;
 import com.flocier.domain.strategy.model.entity.RuleMatterEntity;
 import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
-import com.flocier.domain.strategy.model.vo.RuleLogicCheckTypeVO;
-import com.flocier.domain.strategy.model.vo.RuleTreeVO;
-import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
-import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
+import com.flocier.domain.strategy.model.vo.*;
 import com.flocier.domain.strategy.repository.IStrategyRepository;
 import com.flocier.domain.strategy.service.AbstractRaffleStrategy;
 import com.flocier.domain.strategy.service.IRaffleAward;
@@ -90,5 +87,15 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
     @Override
     public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
         return repository.queryAwardRuleLockCount(treeIds);
+    }
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeight(Long strategyId) {
+        return repository.queryAwardRuleWeight(strategyId);
+    }
+
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeightByActivityId(Long activityId) {
+        Long strategyId = repository.queryStrategyIdByActivityId(activityId);
+        return queryAwardRuleWeight(strategyId);
     }
 }

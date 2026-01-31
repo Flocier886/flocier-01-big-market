@@ -4,6 +4,7 @@ import com.flocier.domain.strategy.model.entity.StrategyAwardEntity;
 import com.flocier.domain.strategy.model.entity.StrategyEntity;
 import com.flocier.domain.strategy.model.entity.StrategyRuleEntity;
 import com.flocier.domain.strategy.model.vo.RuleTreeVO;
+import com.flocier.domain.strategy.model.vo.RuleWeightVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
@@ -53,4 +54,8 @@ public interface IStrategyRepository {
     Boolean subtractionAwardStock(String cacheKey);
 
     Boolean subtractionAwardStock(String cacheKey, Date endDateTime);
+
+    Integer queryActivityAccountTotalUseCount(String userId, Long strategyId);
+
+    List<RuleWeightVO> queryAwardRuleWeight(Long strategyId);
 }

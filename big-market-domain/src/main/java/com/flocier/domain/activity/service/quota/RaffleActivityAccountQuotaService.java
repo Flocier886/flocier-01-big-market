@@ -7,6 +7,7 @@ import com.flocier.domain.activity.model.vo.OrderStateVO;
 import com.flocier.domain.activity.repository.IActivityRepository;
 import com.flocier.domain.activity.service.IRaffleActivitySkuStockService;
 import com.flocier.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
+import com.flocier.types.enums.ResponseCode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +78,15 @@ public class RaffleActivityAccountQuotaService extends AbstractRaffleActivityAcc
     @Override
     public Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId) {
         return repository.queryRaffleActivityAccountDayPartakeCount(activityId,userId);
+    }
+
+    @Override
+    public ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId) {
+        return repository.queryActivityAccountEntity(activityId,userId);
+    }
+
+    @Override
+    public Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId) {
+        return repository.queryRaffleActivityAccountPartakeCount(activityId, userId);
     }
 }

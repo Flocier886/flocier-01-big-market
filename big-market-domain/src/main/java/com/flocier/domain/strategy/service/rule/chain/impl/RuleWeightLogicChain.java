@@ -21,7 +21,6 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     @Resource
     protected IStrategyDisPatch strategyDisPatch;
 
-    public Long userScore=0L;
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-权重开始 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
@@ -31,8 +30,10 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         if(analyticalValueGroup==null || analyticalValueGroup.isEmpty())return null;
         //选择对应区间的ruleWeightValueKey值
         List<Long> analyticalSortedKeys=new ArrayList<>(analyticalValueGroup.keySet());
-        //以修好此处的排序bug
+        //已修好此处的排序bug
         analyticalSortedKeys.sort(Comparator.reverseOrder());
+        //查询用户抽奖权重
+        Integer userScore = repository.queryActivityAccountTotalUseCount(userId, strategyId);
         Long weightValue=analyticalSortedKeys.stream()
                 .filter(key->userScore>=key)
                 .findFirst()
