@@ -1,11 +1,15 @@
 package com.flocier.trigger.http;
 
+import com.alibaba.fastjson.JSON;
 import com.flocier.domain.activity.model.entity.UserRaffleOrderEntity;
 import com.flocier.domain.activity.service.IRaffleActivityPartakeService;
 import com.flocier.domain.activity.service.armory.IActivityArmory;
 import com.flocier.domain.award.model.entity.UserAwardRecordEntity;
 import com.flocier.domain.award.model.vo.AwardStateVO;
 import com.flocier.domain.award.service.IAwardService;
+import com.flocier.domain.rebate.model.entity.BehaviorEntity;
+import com.flocier.domain.rebate.model.vo.BehaviorTypeVO;
+import com.flocier.domain.rebate.service.IBehaviorRebateService;
 import com.flocier.domain.strategy.model.entity.RaffleAwardEntity;
 import com.flocier.domain.strategy.model.entity.RaffleFactorEntity;
 import com.flocier.domain.strategy.service.IRaffleStrategy;
@@ -16,18 +20,24 @@ import com.flocier.trigger.api.dto.ActivityDrawResponseDTO;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
 import com.flocier.types.model.Response;
+import com.mysql.cj.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
 @RequestMapping("api/${app.config.api-version}/raffle/activity/")
 @CrossOrigin("${app.config.cross-origin}")
 public class RaffleActivityController implements IRaffleActivityService {
+
+    private final SimpleDateFormat dateFormatDay = new SimpleDateFormat("yyyyMMdd");
+
     @Resource
     private IActivityArmory activityArmory;
     @Resource
@@ -38,6 +48,8 @@ public class RaffleActivityController implements IRaffleActivityService {
     private IRaffleStrategy raffleStrategy;
     @Resource
     private IAwardService awardService;
+    @Resource
+    private IBehaviorRebateService behaviorRebateService;
 
 
     @Override
@@ -116,6 +128,39 @@ public class RaffleActivityController implements IRaffleActivityService {
             return Response.<ActivityDrawResponseDTO>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+    @Override
+    @PostMapping("calendar_sign_rebate")
+    public Response<Boolean> calendarSignRebate(@RequestParam String userId) {
+        try {
+            log.info("日历签到返利开始 userId:{}", userId);
+            //封装对象
+            BehaviorEntity behaviorEntity = new BehaviorEntity();
+            behaviorEntity.setUserId(userId);
+            behaviorEntity.setBehaviorTypeVO(BehaviorTypeVO.SIGN);
+            behaviorEntity.setOutBusinessNo("20260126");
+            List<String> orderIds = behaviorRebateService.createOrder(behaviorEntity);
+            log.info("日历签到返利完成 userId:{} orderIds: {}", userId, JSON.toJSONString(orderIds));
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(true)
+                    .build();
+        }catch (AppException e){
+            log.error("日历签到返利异常 userId:{} ", userId, e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }catch (Exception e){
+            log.error("日历签到返利失败 userId:{}", userId);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .data(false)
                     .build();
         }
     }

@@ -45,6 +45,7 @@ public class SendMessageTaskJob {
                             //开启线程发送，提高发送效率。配置的线程池策略为 CallerRunsPolicy，在 ThreadPoolConfig 配置中有4个策略，面试中容易对比提问。可以检索下相关资料。
                             executor.execute(()->{
                                 try {
+                                    log.info("定时任务，重新发送MQ消息 userId:{} topic:{}",task.getUserId(),task.getTopic());
                                     taskService.sendMessage(task);
                                     taskService.updateTaskSendMessageCompleted(task.getUserId(), task.getMessageId());
                                 }catch (Exception e){

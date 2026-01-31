@@ -1,6 +1,6 @@
 package com.flocier.domain.rebate.service;
 
-import com.flocier.domain.award.model.vo.TaskStateVO;
+import com.flocier.domain.rebate.model.vo.TaskStateVO;
 import com.flocier.domain.rebate.event.SendRebateMessageEvent;
 import com.flocier.domain.rebate.model.aggregate.BehaviorRebateAggregate;
 import com.flocier.domain.rebate.model.entity.BehaviorEntity;
@@ -46,7 +46,7 @@ public class BehaviorRebateService implements IBehaviorRebateService {
             //构建消息体对象
             SendRebateMessageEvent.RebateMessage rebateMessage= SendRebateMessageEvent.RebateMessage.builder()
                     .userId(behaviorEntity.getUserId())
-                    .rebateType(dailyBehaviorRebateVO.getBehaviorType())
+                    .rebateType(dailyBehaviorRebateVO.getRebateType())
                     .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
                     .bizId(bizId)
                     .build();

@@ -1,6 +1,5 @@
 package com.flocier.infrastructure.persistent.repository;
 
-import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
 import cn.bugstack.middleware.db.router.strategy.IDBRouterStrategy;
 import com.alibaba.fastjson.JSON;
 import com.flocier.domain.rebate.model.aggregate.BehaviorRebateAggregate;
@@ -100,8 +99,10 @@ public class BehaviorRebateRepository implements IBehaviorRebateRepository {
             TaskEntity taskEntity = behaviorRebateAggregate.getTaskEntity();
             Task task = new Task();
             task.setUserId(taskEntity.getUserId());
+            task.setMessageId(taskEntity.getMessageId());
             try{
                 eventPublisher.publish(taskEntity.getTopic(),taskEntity.getMessage());
+                taskDao.updateTaskSendMessageCompleted(task);
             }catch (Exception e){
                 log.error("写入返利记录，发送MQ消息失败 userId: {} topic: {}", userId, task.getTopic());
                 taskDao.updateTaskSendMessageFail(task);

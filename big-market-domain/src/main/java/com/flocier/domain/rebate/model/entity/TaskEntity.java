@@ -1,6 +1,6 @@
 package com.flocier.domain.rebate.model.entity;
 
-import com.flocier.domain.award.model.vo.TaskStateVO;
+import com.flocier.domain.rebate.model.vo.TaskStateVO;
 import com.flocier.domain.rebate.event.SendRebateMessageEvent;
 import com.flocier.types.event.BaseEvent;
 import lombok.AllArgsConstructor;
