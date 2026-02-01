@@ -46,7 +46,7 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         //黑名单直接跳过后面的过滤
         if(chainStrategyAwardVO.getLogicModel().equals(DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode()))
             // TODO awardConfig 暂时为空。黑名单指定积分奖品，后续需要在库表中配置上对应的1积分值，并获取到。
-            return buildRaffleAwardEntity(strategyId,chainStrategyAwardVO.getAwardId(),null);
+            return buildRaffleAwardEntity(strategyId,chainStrategyAwardVO.getAwardId(),chainStrategyAwardVO.getAwardRuleValue());
 
         //抽奖中的规则过滤
         DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO=raffleLogicTree(userId,strategyId,chainStrategyAwardVO.getAwardId(),raffleFactorEntity.getEndDateTime());

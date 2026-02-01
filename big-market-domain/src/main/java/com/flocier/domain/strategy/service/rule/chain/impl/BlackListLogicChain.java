@@ -32,6 +32,8 @@ public class BlackListLogicChain extends AbstractLogicChain {
                     .builder()
                     .awardId(awardId)
                     .logicModel(ruleModel())
+                    //TODO这里写死了，后续应该是查询数据库配置
+                    .awardRuleValue("0.01,1")
                     .build();
         }
         //不处于黑名单就继续过滤其他责任链
