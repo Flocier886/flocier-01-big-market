@@ -2,6 +2,7 @@ package com.flocier.infrastructure.persistent.po;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -22,6 +23,10 @@ public class RaffleActivitySku {
      * 活动个人参与次数ID
      */
     private Long activityCountId;
+    /**
+     * 商品金额【积分】
+     */
+    private BigDecimal productAmount;
     /**
      * 库存总量
      */

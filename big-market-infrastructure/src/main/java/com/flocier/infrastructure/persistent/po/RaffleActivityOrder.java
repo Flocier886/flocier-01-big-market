@@ -3,6 +3,7 @@ package com.flocier.infrastructure.persistent.po;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -48,6 +49,11 @@ public class RaffleActivityOrder {
      * 下单时间
      */
     private Date orderTime;
+
+    /**
+     * 支付金额【积分】
+     */
+    private BigDecimal payAmount;
 
     /**
      * 活动总次数

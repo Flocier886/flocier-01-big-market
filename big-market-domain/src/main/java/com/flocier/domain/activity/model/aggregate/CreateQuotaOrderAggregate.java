@@ -2,6 +2,7 @@ package com.flocier.domain.activity.model.aggregate;
 
 
 import com.flocier.domain.activity.model.entity.ActivityOrderEntity;
+import com.flocier.domain.activity.model.vo.OrderStateVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,5 +46,10 @@ public class CreateQuotaOrderAggregate {
      * 活动订单实体
      */
     private ActivityOrderEntity activityOrderEntity;
+
+    public void setOrderState(OrderStateVO orderState) {
+        this.activityOrderEntity.setState(orderState);
+    }
+
 
 }

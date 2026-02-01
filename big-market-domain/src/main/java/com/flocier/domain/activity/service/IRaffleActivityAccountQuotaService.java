@@ -1,14 +1,17 @@
 package com.flocier.domain.activity.service;
 
-import com.flocier.domain.activity.model.entity.ActivityAccountEntity;
-import com.flocier.domain.activity.model.entity.ActivityOrderEntity;
-import com.flocier.domain.activity.model.entity.ActivityShopCartEntity;
-import com.flocier.domain.activity.model.entity.SkuRechargeEntity;
+import com.flocier.domain.activity.model.entity.*;
 
 public interface IRaffleActivityAccountQuotaService {
     ActivityOrderEntity createRaffleActivityOrder(ActivityShopCartEntity activityShopCartEntity);
 
     String createOrder(SkuRechargeEntity skuRechargeEntity);
+
+    /**
+     * 订单出货 - 积分充值
+     * @param deliveryOrderEntity 出货单实体对象
+     */
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 

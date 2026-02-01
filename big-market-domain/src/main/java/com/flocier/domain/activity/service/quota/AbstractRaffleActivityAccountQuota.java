@@ -5,6 +5,7 @@ import com.flocier.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.flocier.domain.activity.model.entity.*;
 import com.flocier.domain.activity.repository.IActivityRepository;
 import com.flocier.domain.activity.service.IRaffleActivityAccountQuotaService;
+import com.flocier.domain.activity.service.quota.policy.ITradePolicy;
 import com.flocier.domain.activity.service.quota.rule.IActionChain;
 import com.flocier.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import com.flocier.types.enums.ResponseCode;
@@ -12,12 +13,17 @@ import com.flocier.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Map;
+
 @Slf4j
 public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityAccountQuotaSupport implements IRaffleActivityAccountQuotaService {
+    private final Map<String, ITradePolicy> tradePolicyGroup;
 
-    public AbstractRaffleActivityAccountQuota(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
+    public AbstractRaffleActivityAccountQuota(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory, Map<String, ITradePolicy> tradePolicyGroup) {
         super(activityRepository, defaultActivityChainFactory);
+        this.tradePolicyGroup = tradePolicyGroup;
     }
+
 
     @Override
     public ActivityOrderEntity createRaffleActivityOrder(ActivityShopCartEntity activityShopCartEntity) {
@@ -53,13 +59,12 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         boolean success=actionChain.action(activityEntity,activityCountEntity,activitySkuEntity);
         //创建订单聚合对象
         CreateQuotaOrderAggregate createOrderAggregate=buildOrderAggregate(skuRechargeEntity,activitySkuEntity,activityEntity,activityCountEntity);
-        //保存订单
-        doSaveOrder(createOrderAggregate);
+        //判断交易策略
+        ITradePolicy tradePolicy=tradePolicyGroup.get(skuRechargeEntity.getOrderTradeType().getCode());
+        tradePolicy.trade(createOrderAggregate);
         //返回单号
         return createOrderAggregate.getActivityOrderEntity().getOrderId();
     }
-
-    protected abstract void doSaveOrder(CreateQuotaOrderAggregate createOrderAggregate);
 
     protected abstract CreateQuotaOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);
 }
