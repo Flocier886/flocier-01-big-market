@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.flocier.domain.activity.model.entity.ActivityOrderEntity;
 import com.flocier.domain.activity.model.entity.ActivityShopCartEntity;
 import com.flocier.domain.activity.model.entity.SkuRechargeEntity;
+import com.flocier.domain.activity.model.entity.UnpaidActivityOrderEntity;
 import com.flocier.domain.activity.model.vo.OrderTradeTypeVO;
 import com.flocier.domain.activity.service.IRaffleActivityAccountQuotaService;
 import com.flocier.domain.activity.service.armory.IActivityArmory;
@@ -54,8 +55,8 @@ public class RaffleOrderTest {
                 skuRechargeEntity.setSku(9011L);
                 // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
                 skuRechargeEntity.setOutBusinessNo(RandomStringUtils.randomNumeric(12));
-                String orderId = raffleOrder.createOrder(skuRechargeEntity);
-                log.info("测试结果：{}", orderId);
+                UnpaidActivityOrderEntity order = raffleOrder.createOrder(skuRechargeEntity);
+                log.info("测试结果：{}", order);
             } catch (AppException e) {
                 log.warn(e.getInfo());
             }
@@ -70,8 +71,8 @@ public class RaffleOrderTest {
         // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
         skuRechargeEntity.setOutBusinessNo("70009240609013");
         skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.credit_pay_trade);
-        String orderId = raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);
-        log.info("测试结果：{}", orderId);
+        UnpaidActivityOrderEntity order = raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);
+        log.info("测试结果：{}", order);
     }
 
 

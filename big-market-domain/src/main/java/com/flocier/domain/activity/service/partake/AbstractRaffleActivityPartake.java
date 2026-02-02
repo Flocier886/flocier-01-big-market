@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 @Slf4j
-public abstract class AbstractRaffleActivityPartake implements IRaffleActivityPartakeService {
+public abstract class  AbstractRaffleActivityPartake implements IRaffleActivityPartakeService {
     protected final IActivityRepository activityRepository;
 
     protected AbstractRaffleActivityPartake(IActivityRepository activityRepository) {

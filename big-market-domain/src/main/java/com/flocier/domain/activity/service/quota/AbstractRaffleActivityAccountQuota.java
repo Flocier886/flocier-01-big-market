@@ -39,7 +39,7 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         return ActivityOrderEntity.builder().build();
     }
     @Override
-    public String createOrder(SkuRechargeEntity skuRechargeEntity){
+    public UnpaidActivityOrderEntity createOrder(SkuRechargeEntity skuRechargeEntity){
         //参数校验
         String userId=skuRechargeEntity.getUserId();
         Long sku=skuRechargeEntity.getSku();
@@ -47,6 +47,9 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         if(StringUtils.isBlank(userId) || sku==null || StringUtils.isBlank(outBusinessNo)){
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(),ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+        //查询是否有未支付订单
+        UnpaidActivityOrderEntity unpaidCreditOrder=repository.queryUnpaidActivityOrder(skuRechargeEntity);
+        if(unpaidCreditOrder!=null)return unpaidCreditOrder;
         //查询相关信息
         //通过sku查询相关活动sku信息
         ActivitySkuEntity activitySkuEntity=queryActivitySku(sku);
@@ -62,8 +65,14 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         //判断交易策略
         ITradePolicy tradePolicy=tradePolicyGroup.get(skuRechargeEntity.getOrderTradeType().getCode());
         tradePolicy.trade(createOrderAggregate);
-        //返回单号
-        return createOrderAggregate.getActivityOrderEntity().getOrderId();
+        //返回订单
+        ActivityOrderEntity activityOrderEntity=createOrderAggregate.getActivityOrderEntity();
+        return UnpaidActivityOrderEntity.builder()
+                .userId(userId)
+                .orderId(activityOrderEntity.getOrderId())
+                .outBusinessNo(activityOrderEntity.getOutBusinessNo())
+                .payAmount(activityOrderEntity.getPayAmount())
+                .build();
     }
 
     protected abstract CreateQuotaOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);

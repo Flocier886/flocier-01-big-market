@@ -21,4 +21,7 @@ public interface IRaffleActivityOrderDao {
 
     @DBRouter(key = "userId")
     RaffleActivityOrder queryRaffleActivityOrder(RaffleActivityOrder raffleActivityOrderReq);
+
+    @DBRouter
+    RaffleActivityOrder queryUnpaidActivityOrder(RaffleActivityOrder raffleActivityOrderReq);
 }

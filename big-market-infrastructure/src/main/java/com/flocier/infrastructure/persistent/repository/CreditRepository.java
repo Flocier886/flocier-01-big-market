@@ -92,6 +92,7 @@ public class CreditRepository implements ICreditRepository {
                     //写入任务
                     taskDao.insert(task);
                 }catch (DuplicateKeyException e){
+                    //TODO注意这里没有再次抛出异常而是选择吸收异常
                     status.setRollbackOnly();
                     log.error("调整账户积分额度异常，唯一索引冲突 userId:{} orderId:{}", userId, creditOrderEntity.getOrderId(), e);
                 }catch (Exception e){
@@ -115,5 +116,18 @@ public class CreditRepository implements ICreditRepository {
             taskDao.updateTaskSendMessageFail(task);
         }
 
+    }
+
+    @Override
+    public CreditAccountEntity queryUserCreditAccount(String userId) {
+        UserCreditAccount userCreditAccountReq=new UserCreditAccount();
+        userCreditAccountReq.setUserId(userId);
+        try {
+            dbRouter.doRouter(userId);
+            UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
+            return CreditAccountEntity.builder().userId(userId).adjustAmount(userCreditAccount.getAvailableAmount()).build();
+        }finally {
+            dbRouter.clear();
+        }
     }
 }

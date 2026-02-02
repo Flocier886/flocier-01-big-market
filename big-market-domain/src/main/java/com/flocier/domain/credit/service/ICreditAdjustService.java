@@ -1,5 +1,6 @@
 package com.flocier.domain.credit.service;
 
+import com.flocier.domain.credit.model.entity.CreditAccountEntity;
 import com.flocier.domain.credit.model.entity.TradeEntity;
 
 public interface ICreditAdjustService {
@@ -10,4 +11,5 @@ public interface ICreditAdjustService {
      */
     String createOrder(TradeEntity tradeEntity);
 
+    CreditAccountEntity queryUserCreditAccount(String userId);
 }
