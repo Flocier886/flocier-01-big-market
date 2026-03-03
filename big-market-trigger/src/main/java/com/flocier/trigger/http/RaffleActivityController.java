@@ -25,6 +25,8 @@ import com.flocier.domain.strategy.service.IRaffleStrategy;
 import com.flocier.domain.strategy.service.armory.IStrategyArmory;
 import com.flocier.trigger.api.IRaffleActivityService;
 import com.flocier.trigger.api.dto.*;
+import com.flocier.types.annotations.NacosValue;
+import com.flocier.types.annotations.RateLimiterAccessInterceptor;
 import com.flocier.types.enums.ResponseCode;
 import com.flocier.types.exception.AppException;
 import com.flocier.types.model.Response;
@@ -68,6 +70,8 @@ public class RaffleActivityController implements IRaffleActivityService {
     @Resource
     private IRaffleActivitySkuProductService raffleActivitySkuProductService;
 
+    @NacosValue("degradeSwitch:open")
+    private String degradeSwitch;
 
     @Override
     @GetMapping("armory")
@@ -91,11 +95,20 @@ public class RaffleActivityController implements IRaffleActivityService {
         }
     }
 
+    //TODO限流参数修改一下，这个是为了方便测试，以及还可增加HystrixCommand等限流熔断措施
+    @RateLimiterAccessInterceptor(key = "userId",fallbackMethod = "drawRateLimiterError",permitsPerSecond = 1L,blacklistCount = 1L)
     @Override
     @PostMapping("draw")
     public Response<ActivityDrawResponseDTO> draw(@RequestBody ActivityDrawRequestDTO request) {
         try {
             log.info("活动抽奖 userId:{} activityId:{}", request.getUserId(), request.getActivityId());
+            //设置降级策略
+            if (!"open".equals(degradeSwitch)) {
+                return Response.<ActivityDrawResponseDTO>builder()
+                        .code(ResponseCode.DEGRADE_SWITCH.getCode())
+                        .info(ResponseCode.DEGRADE_SWITCH.getInfo())
+                        .build();
+            }
             //参数校验
             String userId= request.getUserId();
             Long activityId=request.getActivityId();
@@ -149,6 +162,15 @@ public class RaffleActivityController implements IRaffleActivityService {
                     .build();
         }
     }
+    public Response<ActivityDrawResponseDTO> drawRateLimiterError(@RequestBody ActivityDrawRequestDTO request) {
+        log.info("活动抽奖限流 userId:{} activityId:{}", request.getUserId(), request.getActivityId());
+        return Response.<ActivityDrawResponseDTO>builder()
+                .code(ResponseCode.RATE_LIMITER.getCode())
+                .info(ResponseCode.RATE_LIMITER.getInfo())
+                .build();
+    }
+
+
 
     @Override
     @PostMapping("calendar_sign_rebate")
