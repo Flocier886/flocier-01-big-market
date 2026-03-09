@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 @Component("default")
 public class DefaultLogicChain extends AbstractLogicChain {
     @Resource
-    protected IStrategyDisPatch strategyDisPatch;
+    private IStrategyDisPatch strategyDisPatch;
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         //执行默认的抽奖流程
@@ -22,6 +22,7 @@ public class DefaultLogicChain extends AbstractLogicChain {
                 .builder()
                 .awardId(awardId)
                 .logicModel(ruleModel())
+                .awardRuleValue(awardValue(awardId))
                 .build();
     }
 

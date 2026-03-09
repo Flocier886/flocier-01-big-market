@@ -48,6 +48,9 @@ public class StrategyRepository implements IStrategyRepository {
     private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
     @Resource
     private IRaffleActivityAccountDao raffleActivityAccountDao;
+    @Resource
+    private IAwardDao awardDao;
+
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
         //先从redis中查找获取
@@ -307,7 +310,7 @@ public class StrategyRepository implements IStrategyRepository {
             redisService.setValue(cacheKey,0);
             return false;
         }
-        //TODO操作成功，上锁防止超卖(该上锁方法需要再次确认)
+        //操作成功，上锁防止超卖
         String lockKey=cacheKey+Constants.UNDERLINE+surplus;
         Boolean lock=false;
         if(endDateTime==null){
@@ -380,5 +383,11 @@ public class StrategyRepository implements IStrategyRepository {
         return ruleWeightVOS;
 
     }
+
+    @Override
+    public String queryStrategyAwardValue(Integer awardId) {
+        return awardDao.queryAwardConfigByAwardId(awardId);
+    }
+
 
 }

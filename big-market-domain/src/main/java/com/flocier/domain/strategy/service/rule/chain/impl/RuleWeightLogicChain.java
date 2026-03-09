@@ -17,8 +17,6 @@ import java.util.*;
 @Component("rule_weight")
 public class RuleWeightLogicChain extends AbstractLogicChain {
     @Resource
-    private IStrategyRepository repository;
-    @Resource
     protected IStrategyDisPatch strategyDisPatch;
 
     @Override
@@ -46,6 +44,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
                     .builder()
                     .awardId(awardId)
                     .logicModel(ruleModel())
+                    .awardRuleValue(awardValue(awardId))
                     .build();
         }
         // 过滤其他责任链

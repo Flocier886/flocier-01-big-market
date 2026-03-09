@@ -169,7 +169,7 @@ public class RedissonService implements IRedisService {
 
     @Override
     public Boolean setNx(String key, long expireMillis, TimeUnit timeUnit) {
-        //TODO这里的trySet函数仿佛因为版本问题已弃用
+        //这里的trySet函数因为版本问题已弃用,但只是不推荐使用，功能还是能实现的
         return redissonClient.getBucket(key).trySet("lock",expireMillis,timeUnit);
     }
 

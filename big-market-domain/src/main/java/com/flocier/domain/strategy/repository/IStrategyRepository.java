@@ -58,4 +58,7 @@ public interface IStrategyRepository {
     Integer queryActivityAccountTotalUseCount(String userId, Long strategyId);
 
     List<RuleWeightVO> queryAwardRuleWeight(Long strategyId);
+
+    String queryStrategyAwardValue(Integer awardId);
+
 }

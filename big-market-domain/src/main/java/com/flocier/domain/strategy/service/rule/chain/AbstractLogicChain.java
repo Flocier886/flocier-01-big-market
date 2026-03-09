@@ -1,7 +1,13 @@
 package com.flocier.domain.strategy.service.rule.chain;
 
 
+import com.flocier.domain.strategy.repository.IStrategyRepository;
+
+import javax.annotation.Resource;
+
 public abstract class AbstractLogicChain implements ILogicChain{
+    @Resource
+    protected IStrategyRepository repository;
 
     private ILogicChain next;
 
@@ -17,4 +23,8 @@ public abstract class AbstractLogicChain implements ILogicChain{
     }
 
     protected abstract String ruleModel();
+
+    protected String awardValue(Integer awardId){
+        return repository.queryStrategyAwardValue(awardId);
+    }
 }

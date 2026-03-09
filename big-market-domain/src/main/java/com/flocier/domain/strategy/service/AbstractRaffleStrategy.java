@@ -42,19 +42,27 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
 
         //抽奖前的规则过滤
         DefaultChainFactory.StrategyAwardVO chainStrategyAwardVO=raffleLogicChain(userId,strategyId);
-        log.info("抽奖策略计算-责任链 {} {} {} {}", userId, strategyId, chainStrategyAwardVO.getAwardId(), chainStrategyAwardVO.getLogicModel());
+        log.info("抽奖策略计算-责任链 {} {} {} {} {}", userId, strategyId, chainStrategyAwardVO.getAwardId(), chainStrategyAwardVO.getLogicModel(),chainStrategyAwardVO.getAwardRuleValue());
         //黑名单直接跳过后面的过滤
         if(chainStrategyAwardVO.getLogicModel().equals(DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode()))
-            // TODO awardConfig 暂时为空。黑名单指定积分奖品，后续需要在库表中配置上对应的1积分值，并获取到。
-            return buildRaffleAwardEntity(strategyId,chainStrategyAwardVO.getAwardId(),chainStrategyAwardVO.getAwardRuleValue());
+            //黑名单奖品不会配置在strategy_award中，而是配置在award表中，所以填写相关信息不能再查strategy_award表
+            return buildBlacklistRaffleAwardEntity(chainStrategyAwardVO.getAwardId(),chainStrategyAwardVO.getAwardRuleValue());
 
         //抽奖中的规则过滤
         DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO=raffleLogicTree(userId,strategyId,chainStrategyAwardVO.getAwardId(),raffleFactorEntity.getEndDateTime());
+        //这里的awardValue值可能会被决策树过滤掉，只需要在到时候做奖品发放处理时再对其对应奖品进行一次关于award表查询即可（简单来说就是award表里面有awardValue备份）
         log.info("抽奖策略计算-规则树 {} {} {} {}", userId, strategyId, treeStrategyAwardVO.getAwardId(), treeStrategyAwardVO.getAwardRuleValue());
         return buildRaffleAwardEntity(strategyId,treeStrategyAwardVO.getAwardId(),treeStrategyAwardVO.getAwardRuleValue());
     }
 
-    protected abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId, Date endDateTime);
+    private RaffleAwardEntity buildBlacklistRaffleAwardEntity(Integer awardId, String awardRuleValue) {
+        return RaffleAwardEntity.builder()
+                .awardId(awardId)
+                .awardConfig(awardRuleValue)
+                .awardTitle("黑名单奖品")
+                .sort(0)
+                .build();
+    }
 
     private RaffleAwardEntity buildRaffleAwardEntity(Long strategyId, Integer awardId, String awardConfig) {
         StrategyAwardEntity strategyAward = repository.queryStrategyAwardEntity(strategyId, awardId);
@@ -66,7 +74,7 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
                 .build();
     }
 
-
+    protected abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId, Date endDateTime);
     protected abstract DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId,Long strategyId);
     protected abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId,Long strategyId,Integer awardId);
 }

@@ -67,7 +67,7 @@ public class AwardService implements IAwardService{
         }
         IDistributeAward distributeAward=distributeAwardMap.get(awardKey);
         if (null == distributeAward) {
-            //TODO 完善后续的奖品总类发放
+            //TODO 完善后续的奖品总类发放，切记实现各奖品发放时对应的配置应做判空重新查询处理
             log.error("分发奖品，对应的服务不存在。awardKey:{}", awardKey);
             throw new RuntimeException("分发奖品，奖品" + awardKey + "对应的服务不存在");
         }

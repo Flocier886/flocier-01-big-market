@@ -28,7 +28,6 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
     @Override
     public ActivityOrderEntity createRaffleActivityOrder(ActivityShopCartEntity activityShopCartEntity) {
         //通过sku查询相关活动sku信息
-        //TODO这步过后应该还有空指针判断校验
         ActivitySkuEntity activitySkuEntity=queryActivitySku(activityShopCartEntity.getSku());
         //查询活动信息
         ActivityEntity activityEntity=queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
