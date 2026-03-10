@@ -359,8 +359,14 @@ public class ActivityRepository implements IActivityRepository {
                             log.warn("写入创建参与活动记录，更新月账户额度不足，异常 userId: {} activityId: {} month: {}", userId, activityId, activityAccountMonthEntity.getMonth());
                             throw new AppException(ResponseCode.ACCOUNT_MONTH_QUOTA_ERROR.getCode(), ResponseCode.ACCOUNT_MONTH_QUOTA_ERROR.getInfo());
                         }
+                        // 更新总账户中月镜像库存
+                        raffleActivityAccountDao.updateActivityAccountMonthSubtractionQuota(
+                                RaffleActivityAccount.builder()
+                                        .userId(userId)
+                                        .activityId(activityId)
+                                        .build());
                     } else {
-                        //没有相关用户月账户，创建月账户
+                        // 没有相关用户月账户，创建月账户
                         raffleActivityAccountMonthDao.insertActivityAccountMonth(RaffleActivityAccountMonth.builder()
                                 .userId(activityAccountMonthEntity.getUserId())
                                 .activityId(activityAccountMonthEntity.getActivityId())
@@ -368,7 +374,7 @@ public class ActivityRepository implements IActivityRepository {
                                 .monthCount(activityAccountMonthEntity.getMonthCount())
                                 .monthCountSurplus(activityAccountMonthEntity.getMonthCountSurplus() - 1)
                                 .build());
-                        // TODO新创建月账户，则更新总账表中月镜像额度(感觉没必要写这一步，因为上面总账户已经更新过一次了，下面的日账户同理)
+                        // 新创建月账户，则更新总账表中月镜像额度
                         raffleActivityAccountDao.updateActivityAccountMonthSurplusImageQuota(RaffleActivityAccount.builder()
                                 .userId(userId)
                                 .activityId(activityId)
@@ -389,6 +395,12 @@ public class ActivityRepository implements IActivityRepository {
                             log.warn("写入创建参与活动记录，更新日账户额度不足，异常 userId: {} activityId: {} day: {}", userId, activityId, activityAccountDayEntity.getDay());
                             throw new AppException(ResponseCode.ACCOUNT_DAY_QUOTA_ERROR.getCode(), ResponseCode.ACCOUNT_DAY_QUOTA_ERROR.getInfo());
                         }
+                        // 更新总账户中日镜像库存
+                        raffleActivityAccountDao.updateActivityAccountDaySubtractionQuota(
+                                RaffleActivityAccount.builder()
+                                        .userId(userId)
+                                        .activityId(activityId)
+                                        .build());
                     }else {
                         raffleActivityAccountDayDao.insertActivityAccountDay(RaffleActivityAccountDay.builder()
                                 .userId(activityAccountDayEntity.getUserId())

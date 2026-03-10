@@ -52,7 +52,6 @@ public class CreditAdjustSuccessCustomer {
             throw e;
         }catch (Exception e){
             log.error("监听积分账户调整成功消息，进行交易商品发货失败 topic: {} message: {}", topic, message, e);
-            //TODO在MQ监听器中这种失败抛异常可能会导致MQ不断抛异常然后把消息重新发送一遍，然后就会导致不断的接受然后失败返回发送再接受，一直死循环
             throw e;
         }
     }
