@@ -2,6 +2,8 @@ package com.flocier.domain.strategy.service;
 
 import com.flocier.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
+import java.util.List;
+
 public interface IRaffleStock {
     /**
      * 获取奖品库存消耗队列
@@ -10,6 +12,14 @@ public interface IRaffleStock {
      * @throws InterruptedException 异常
      */
     StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException;
+
+    /**
+     * 获取奖品库存消耗队列
+     *
+     * @return 奖品库存Key信息
+     * @throws InterruptedException 异常
+     */
+    StrategyAwardStockKeyVO takeQueueValue(Long strategyId, Integer awardId) throws InterruptedException;
 
     /**
      * 更新奖品库存消耗记录

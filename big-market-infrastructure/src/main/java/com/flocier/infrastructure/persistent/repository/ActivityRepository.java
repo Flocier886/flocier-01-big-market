@@ -273,6 +273,7 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
+    @Deprecated
     public ActivitySkuStockKeyVO takeQueueValue() {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUEUE_KEY;
         RBlockingQueue<ActivitySkuStockKeyVO> destinationQueue = redisService.getBlockingQueue(cacheKey);
@@ -280,14 +281,25 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
+    public ActivitySkuStockKeyVO takeQueueValue(Long sku) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUEUE_KEY + Constants.UNDERLINE + sku;
+        RBlockingQueue<ActivitySkuStockKeyVO> destinationQueue = redisService.getBlockingQueue(cacheKey);
+        return destinationQueue.poll();
+    }
+
+    @Override
+    @Deprecated
     public void clearQueueValue() {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUEUE_KEY;
         RBlockingQueue<ActivitySkuStockKeyVO> destinationQueue = redisService.getBlockingQueue(cacheKey);
-        /**
-         * TODO有bug,这里的清理仿佛并不起作用，因为消息是由延迟队列3秒后发来的，这里清理的目的是因为MQ监听器已经收到库存为空的消息并将数据库的数据直接改为0保证数据一致性
-         * 然后再将redis中的阻塞队列消息清空防止重复发消息来增大数据库压力，但是即使清空了阻塞队列消息，延迟队列的消息依然存在，还是会正常发给阻塞队列并让对应监听器接受相应信息
-         * 这里由于数据库的语句有一定健壮性所以没导致更严重的事情发生
-         * */
+        //虽然清空阻塞队列后可能还会有延迟队列的消息，但是有sql语句兜底不会导致库存出错（主要还是为了减少sql请求）
+        destinationQueue.clear();
+    }
+
+    @Override
+    public void clearQueueValue(Long sku) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUEUE_KEY + Constants.UNDERLINE + sku;
+        RBlockingQueue<ActivitySkuStockKeyVO> destinationQueue = redisService.getBlockingQueue(cacheKey);
         destinationQueue.clear();
     }
 
@@ -711,4 +723,10 @@ public class ActivityRepository implements IActivityRepository {
                 .payAmount(raffleActivityOrderRes.getPayAmount())
                 .build();
     }
+
+    @Override
+    public List<Long> querySkuList() {
+        return raffleActivitySkuDao.querySkuList();
+    }
+
 }

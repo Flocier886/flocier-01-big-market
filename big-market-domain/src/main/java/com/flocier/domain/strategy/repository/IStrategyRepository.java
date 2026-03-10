@@ -41,6 +41,8 @@ public interface IStrategyRepository {
 
     StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException;
 
+    StrategyAwardStockKeyVO takeQueueValue(Long strategyId, Integer awardId) throws InterruptedException;
+
     void updateStrategyAwardStock(Long strategyId, Integer awardId);
 
     StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId);
@@ -60,5 +62,7 @@ public interface IStrategyRepository {
     List<RuleWeightVO> queryAwardRuleWeight(Long strategyId);
 
     String queryStrategyAwardValue(Integer awardId);
+
+    List<StrategyAwardStockKeyVO> queryOpenActivityStrategyAwardList();
 
 }

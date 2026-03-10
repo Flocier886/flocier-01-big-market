@@ -27,7 +27,11 @@ public interface IActivityRepository {
 
     ActivitySkuStockKeyVO takeQueueValue();
 
+    ActivitySkuStockKeyVO takeQueueValue(Long sku);
+
     void clearQueueValue();
+
+    void clearQueueValue(Long sku);
 
     void updateActivitySkuStock(Long sku);
 
@@ -56,4 +60,7 @@ public interface IActivityRepository {
     List<SkuProductEntity> querySkuProductEntityListByActivityId(Long activityId);
 
     UnpaidActivityOrderEntity queryUnpaidActivityOrder(SkuRechargeEntity skuRechargeEntity);
+
+    List<Long> querySkuList();
+
 }

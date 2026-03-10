@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -59,8 +60,18 @@ public class RaffleActivityAccountQuotaService extends AbstractRaffleActivityAcc
     }
 
     @Override
+    public ActivitySkuStockKeyVO takeQueueValue(Long sku) throws InterruptedException {
+        return repository.takeQueueValue(sku);
+    }
+
+    @Override
     public void clearQueueValue() {
         repository.clearQueueValue();
+    }
+
+    @Override
+    public void clearQueueValue(Long sku) {
+        repository.clearQueueValue(sku);
     }
 
     @Override
@@ -71,6 +82,11 @@ public class RaffleActivityAccountQuotaService extends AbstractRaffleActivityAcc
     @Override
     public void clearActivitySkuStock(Long sku) {
         repository.clearActivitySkuStock(sku);
+    }
+
+    @Override
+    public List<Long> querySkuList() {
+        return repository.querySkuList();
     }
 
     @Override
