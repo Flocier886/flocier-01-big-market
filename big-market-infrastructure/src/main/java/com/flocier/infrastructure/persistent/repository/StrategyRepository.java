@@ -140,7 +140,6 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public RuleTreeVO queryRuleTreeVOByTreeId(String treeId) {
-        //TODO优先从缓存中获取数据,数据库修改了必须要清除原缓存
         String cacheKey=Constants.RedisKey.RULE_TREE_VO_KEY+treeId;
         RuleTreeVO ruleTreeVOCache=redisService.getValue(cacheKey);
         if(ruleTreeVOCache!=null)return ruleTreeVOCache;
@@ -357,7 +356,6 @@ public class StrategyRepository implements IStrategyRepository {
         for (String ruleWeightKey : ruleWeightKeys) {
             List<Integer> awardIds = ruleWeightValues.get(ruleWeightKey);
             List<RuleWeightVO.Award> awardList = new ArrayList<>();
-            // TODO也可以修改为一次从数据库查询
             for (Integer awardId : awardIds) {
                 StrategyAward strategyAwardReq = new StrategyAward();
                 strategyAwardReq.setStrategyId(strategyId);

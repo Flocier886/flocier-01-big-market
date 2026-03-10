@@ -22,14 +22,16 @@ public class CreditAdjustServiceTest {
     private ICreditAdjustService creditAdjustService;
 
     @Test
-    public void test_createOrder_forward() {
+    public void test_createOrder_forward() throws InterruptedException {
         TradeEntity tradeEntity = new TradeEntity();
         tradeEntity.setUserId("xiaofuge");
         tradeEntity.setTradeName(TradeNameVO.REBATE);
         tradeEntity.setTradeType(TradeTypeVO.FORWARD);
         tradeEntity.setAmount(new BigDecimal("10.19"));
-        tradeEntity.setOutBusinessNo("100009909911");
+        tradeEntity.setOutBusinessNo("100009909993");
         creditAdjustService.createOrder(tradeEntity);
+
+        new CountDownLatch(1).await();
     }
 
     @Test
@@ -39,18 +41,18 @@ public class CreditAdjustServiceTest {
         tradeEntity.setTradeName(TradeNameVO.REBATE);
         tradeEntity.setTradeType(TradeTypeVO.REVERSE);
         tradeEntity.setAmount(new BigDecimal("-10.19"));
-        tradeEntity.setOutBusinessNo("20000990991");
+        tradeEntity.setOutBusinessNo("20000990971");
         creditAdjustService.createOrder(tradeEntity);
     }
 
     @Test
     public void test_createOrder_pay() throws InterruptedException {
         TradeEntity tradeEntity = new TradeEntity();
-        tradeEntity.setUserId("flocier");
+        tradeEntity.setUserId("floicer");
         tradeEntity.setTradeName(TradeNameVO.CONVERT_SKU);
         tradeEntity.setTradeType(TradeTypeVO.REVERSE);
         tradeEntity.setAmount(new BigDecimal("-1.68"));
-        tradeEntity.setOutBusinessNo("70009240609013");
+        tradeEntity.setOutBusinessNo("70009240609076");
         creditAdjustService.createOrder(tradeEntity);
 
         new CountDownLatch(1).await();

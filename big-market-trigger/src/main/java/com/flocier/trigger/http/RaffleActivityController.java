@@ -329,7 +329,7 @@ public class RaffleActivityController implements IRaffleActivityService {
 
     @RequestMapping(value = "credit_pay_exchange_sku", method = RequestMethod.POST)
     @Override
-    public Response<Boolean> creditPayExchangeSku(SkuProductShopCartRequestDTO request) {
+    public Response<Boolean> creditPayExchangeSku(@RequestBody SkuProductShopCartRequestDTO request) {
         try {
             log.info("积分兑换商品开始 userId:{} sku:{}", request.getUserId(), request.getSku());
             // .1 创建sku待支付订单
@@ -354,7 +354,14 @@ public class RaffleActivityController implements IRaffleActivityService {
                     .info(ResponseCode.SUCCESS.getInfo())
                     .data(true)
                     .build();
-        }catch (Exception e){
+        } catch (AppException e){
+            log.error("积分兑换商品失败 userId:{} sku:{}", request.getUserId(), request.getSku(), e);
+            return Response.<Boolean>builder()
+                    .code(e.getCode())
+                    .info(e.getInfo())
+                    .data(false)
+                    .build();
+        }catch(Exception e){
             log.error("积分兑换商品失败 userId:{} sku:{}", request.getUserId(), request.getSku(), e);
             return Response.<Boolean>builder()
                     .code(ResponseCode.UN_ERROR.getCode())

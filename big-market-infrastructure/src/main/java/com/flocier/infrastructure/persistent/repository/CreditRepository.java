@@ -18,6 +18,8 @@ import com.flocier.infrastructure.persistent.po.UserCreditAccount;
 import com.flocier.infrastructure.persistent.po.UserCreditOrder;
 import com.flocier.infrastructure.persistent.redis.IRedisService;
 import com.flocier.types.common.Constants;
+import com.flocier.types.enums.ResponseCode;
+import com.flocier.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -80,30 +83,47 @@ public class CreditRepository implements ICreditRepository {
                 try {
                     //更新账户积分
                     UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
+                    if(userCreditAccount!= null && userCreditAccount.getAccountStatus().equals(AccountStatusVO.close.getCode())){
+                        //账号被冻结
+                        status.setRollbackOnly();
+                        throw new AppException(ResponseCode.USER_CREDIT_ACCOUNT_CLOSED.getCode(),ResponseCode.USER_CREDIT_ACCOUNT_CLOSED.getInfo());
+                    }
                     if (null == userCreditAccount) {
-                        //TODO这里数据库的open字段好像并没有起到任何过滤屏蔽作用，后期应该修改对应的mapper的数据库语句
                         userCreditAccountReq.setAccountStatus(AccountStatusVO.open.getCode());
                         userCreditAccountDao.insert(userCreditAccountReq);
                     } else {
-                        userCreditAccountDao.updateAddAmount(userCreditAccountReq);
+                        BigDecimal availableAmount=userCreditAccountReq.getAvailableAmount();
+                        if(availableAmount.compareTo(BigDecimal.ZERO)>=0) {
+                            userCreditAccountDao.updateAddAmount(userCreditAccountReq);
+                        } else {
+                            int subtractionCount=userCreditAccountDao.updateSubtractionAmount(userCreditAccountReq);
+                            if(subtractionCount!=1){
+                                //账户余额不足
+                                status.setRollbackOnly();
+                                throw new AppException(ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getCode(), ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getInfo());
+                            }
+                        }
                     }
                     //保存订单
                     userCreditOrderDao.insert(userCreditOrderReq);
                     //写入任务
                     taskDao.insert(task);
                 }catch (DuplicateKeyException e){
-                    //TODO注意这里没有再次抛出异常而是选择吸收异常
                     status.setRollbackOnly();
                     log.error("调整账户积分额度异常，唯一索引冲突 userId:{} orderId:{}", userId, creditOrderEntity.getOrderId(), e);
-                }catch (Exception e){
+                    throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
+                }catch (AppException e){
                     status.setRollbackOnly();
                     log.error("调整账户积分额度失败 userId:{} orderId:{}", userId, creditOrderEntity.getOrderId(), e);
+                    throw new AppException(e.getCode(),e.getInfo());
                 }
                 return 1;
             });
         }finally {
             dbRouter.clear();
-            lock.unlock();
+            if(lock.isLocked()) {
+                lock.unlock();
+            }
         }
         try {
             // 发送消息【在事务外执行，如果失败还有任务补偿】

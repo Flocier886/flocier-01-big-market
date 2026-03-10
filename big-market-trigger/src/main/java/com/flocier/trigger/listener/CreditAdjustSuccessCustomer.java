@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @Slf4j
 @Component
@@ -32,6 +33,11 @@ public class CreditAdjustSuccessCustomer {
             BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> eventMessage = JSON.parseObject(message, new TypeReference<BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage>>() {
             }.getType());
             CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage creditAdjustSuccessMessage = eventMessage.getData();
+            //若积分变化是正的，说明不是在消耗积分买商品，直接吸收掉该MQ
+            if(creditAdjustSuccessMessage.getAmount().compareTo(BigDecimal.ZERO)>0){
+                log.info("不是此监听器的交易商品发货业务，吸收此消息 topic: {} message: {}", topic, message);
+                return;
+            }
             //积分发货
             DeliveryOrderEntity deliveryOrderEntity = new DeliveryOrderEntity();
             deliveryOrderEntity.setUserId(creditAdjustSuccessMessage.getUserId());

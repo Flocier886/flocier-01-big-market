@@ -420,7 +420,6 @@ public class ActivityRepository implements IActivityRepository {
                     status.setRollbackOnly();
                     log.error("写入创建参与活动记录，唯一索引冲突 userId: {} activityId: {}", userId, activityId, e);
                     throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
-
                 }
             });
         }finally {
@@ -592,6 +591,10 @@ public class ActivityRepository implements IActivityRepository {
             raffleActivityOrderReq.setUserId(deliveryOrderEntity.getUserId());
             raffleActivityOrderReq.setOutBusinessNo(deliveryOrderEntity.getOutBusinessNo());
             RaffleActivityOrder raffleActivityOrderRes = raffleActivityOrderDao.queryRaffleActivityOrder(raffleActivityOrderReq);
+            //没有查到订单说明不存在，直接返回结束程序
+            if (null == raffleActivityOrderRes) {
+                return;
+            }
             //log.info("raffleActivityOrderRes的值: {}",raffleActivityOrderRes);
             //构建账户总对象
             RaffleActivityAccount raffleActivityAccount = new RaffleActivityAccount();
@@ -648,7 +651,9 @@ public class ActivityRepository implements IActivityRepository {
             });
         }finally {
             dbRouter.clear();
-            lock.unlock();
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 
