@@ -68,7 +68,7 @@ public class RateLimiterAOP {
 
     private boolean tryAcquireFromRedisson(String keyAttr, long permitsPerSecond) {
         String limitKey="big_market_rate_limit_"+keyAttr;
-        RRateLimiter rateLimiter=redissonClient.getRateLimiter(keyAttr);
+        RRateLimiter rateLimiter=redissonClient.getRateLimiter(limitKey);
         //尝试初始化限流配置，已经初始化便不会再初始化
         rateLimiter.trySetRate(RateType.OVERALL,permitsPerSecond,1, RateIntervalUnit.SECONDS);
 

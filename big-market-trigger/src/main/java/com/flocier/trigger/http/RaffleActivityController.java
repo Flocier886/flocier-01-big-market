@@ -95,8 +95,7 @@ public class RaffleActivityController implements IRaffleActivityService {
         }
     }
 
-    //TODO限流参数修改一下，这个是为了方便测试，以及还可增加HystrixCommand等限流熔断措施
-    @RateLimiterAccessInterceptor(key = "userId",fallbackMethod = "drawRateLimiterError",permitsPerSecond = 1L,blacklistCount = 1L)
+    @RateLimiterAccessInterceptor(key = "userId",fallbackMethod = "drawRateLimiterError",permitsPerSecond = 10L,blacklistCount = 5L)
     @Override
     @PostMapping("draw")
     public Response<ActivityDrawResponseDTO> draw(@RequestBody ActivityDrawRequestDTO request) {
