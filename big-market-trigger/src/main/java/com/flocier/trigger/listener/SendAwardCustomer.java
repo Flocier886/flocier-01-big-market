@@ -39,8 +39,9 @@ public class SendAwardCustomer {
             awardService.distributeAward(distributeAwardEntity);
 
         } catch (Exception e) {
+            //TODO由于部分发奖功能未实现，这里不能再抛异常否则MQ会一直重复发
             log.error("监听用户奖品发送消息，消费失败 topic: {} message: {}", topic, message);
-            throw e;
+            //throw e;
         }
     }
 
