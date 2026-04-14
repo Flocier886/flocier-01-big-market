@@ -31,4 +31,4 @@ Quick Start（快速启动）
 
 Project Structure（项目结构）
 
-controller：接口层 | service：业务逻辑 | dao/mapper：数据访问 | aop：限流切面 | common：通用工具 | config：中间件配置
+controller：接口层 | domain：业务逻辑 | dao/mapper：数据访问 | aop：限流切面 | common：通用工具 | config：中间件配置
